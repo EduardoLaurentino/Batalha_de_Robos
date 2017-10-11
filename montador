@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+
+
+from sys import stdin
+
+l = stdin.readline()
+ip = 0
+
+tabsim = {}
+
+print("#include <stdio.h>")
+print("#include \"maq.h\"\n")
+
+
+print("INSTR programa[] = {")
+while l:
+    label = op = ""
+    arg   = 0
+    try:
+        l = l[:l.index('#')]
+    except:
+        pass
+    keys = l.split()
+    if len(keys) > 0 and keys[0].endswith(":"):
+        label = keys[0][:-1]              #jogando fora o ':'
+        tabsim[label]=ip
+        keys.pop(0)
+    if len(keys) > 0:
+        op = keys.pop(0)
+    if len(keys) > 0:
+        arg = keys.pop(0)
+        if arg in tabsim:
+            arg = tabsim[arg]
+    if op != "":
+        print("  {%s, %s},"%(op,arg))
+    else:
+        print("")
+    l = stdin.readline()
+    ip += 1
+print("};")
+
+print("")
+
+#parte que cria uma maquina com 10000 ciclos
+print("int main(int ac, char **av) { \n Maquina *maq = cria_maquina(programa); \n exec_maquina(maq, 10000); \n")
+print(" destroi_maquina(maq);\n return 0;\n}")
+
+# Local variables:
+# mode: python
+# End:
