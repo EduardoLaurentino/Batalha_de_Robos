@@ -26,6 +26,7 @@ typedef enum {
   PRN,
   STL,
   RCE,
+  ATR,
 } OpCode;
 
 /* Tipos dos operandos */

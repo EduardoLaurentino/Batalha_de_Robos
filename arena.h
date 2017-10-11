@@ -32,6 +32,8 @@ Arena *cria_arena(/*sem argumentos?*/);
 
 DCJ *cria_continuidade(/**/);
 
+void verifica_continuidade(int max_rod);
+
 Celula *cria_celula(/*sem argumentos?*/);
 
 void registro(*Maquina);

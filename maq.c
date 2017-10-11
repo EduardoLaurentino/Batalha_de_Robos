@@ -186,7 +186,9 @@ void exec_maquina(Maquina *m, int n) {
   case RCE:
     empilha(pil, m->Mem[arg + rbp]);
     break;
-  
+  case ATR:
+    empilha(pil, desempilha());
+    break;
   }
     
 	D(imprime(pil,5));
