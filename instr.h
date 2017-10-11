@@ -36,6 +36,12 @@ typedef enum {
   VAR
 } Tipo;
 
+typedef struct{
+  int x;
+  int y;
+  int cristais;
+} Atributo;
+
 /* Operando */
 /* typedef struct { */
 /*   Tipo t; */
