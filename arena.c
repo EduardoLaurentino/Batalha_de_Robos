@@ -16,6 +16,7 @@ Celula *cria_celula(/*sem argumentos?*/){
 	c->cristais = /*aleatorio*/;
 	c->ocupacao = 0;
 	c->base = /*aleatorio?*/
+    return c;
 }
 
 DCJ *cria_continuidade(/*sem argumentos?*/){
@@ -23,6 +24,7 @@ DCJ *cria_continuidade(/*sem argumentos?*/){
     if(!DCj) Fatal("Memória insuficiente!",4);
     dcj->timestep = 0;
     dcj->NEA = 0;
+    return dcj;
 }
 
 void InsereExercito(Arena *a){
@@ -39,7 +41,7 @@ void Sistema(Arena *a, int op){
 }
 
 int verifica_continuidade(Arena *a, int max_rod){
-    if (a->DCJ->timestep <= max_road && a->DCJ->NEA > 1) return 1; //ainda tem tempo e exercito
+    if ((a->DCJ->timestep) <= max_road && (a->DCJ->NEA) > 1) return 1; //ainda tem tempo e exercito
     else return 0;
 }
 
