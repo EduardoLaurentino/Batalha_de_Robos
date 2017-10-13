@@ -37,11 +37,11 @@ typedef enum {
   VAR
 } Tipo;
 
-typedef struct{
+/*typedef struct{
   int x;
   int y;
   int cristais;
-} Atributo;
+} Atributo;*/
 
 /* Operando */
 /* typedef struct { */
@@ -52,7 +52,18 @@ typedef struct{
 /* 	int v; */
 /*   }; */
 /* } OPERANDO; */
-typedef int OPERANDO;
+//typedef int OPERANDO;
+
+typedef struct {
+   Tipo t;
+   int valor;
+   /*union {
+    int n;
+    int ac;
+    int v;
+   };*/
+} OPERANDO;
+
 
 /* Instrução */
 typedef struct {

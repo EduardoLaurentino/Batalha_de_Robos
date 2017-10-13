@@ -52,6 +52,9 @@ Maquina *cria_maquina(INSTR *p) {
   m->ip = 0;
   m->rbp = 0; //novo registrador
   m->prog = p;
+  m->cristais = 0; //um robo começa com zero cristais????????
+  m->x = /*aleatório?*/
+  m->y = /*aleatório?*/
   return m;
 }
 
@@ -117,20 +120,20 @@ void exec_maquina(Maquina *m, int n) {
         continue;
       }
       break;
-  
-  //modificacoes para a utilizacao de variaveis locais com criacao de frames   
+
+  //modificacoes para a utilizacao de variaveis locais com criacao de frames
   case CALL:
     empilha(exec, ip);
     empilha (exec, rbp);
     rbp = (exec->topo);
     ip = arg;
-    continue;   
+    continue;
   case RET:
     exec->topo = rbp;
     rbp = desempilha(exec);
     ip = desempilha(exec);
     break;
-    
+
   case EQ:
     if (desempilha(pil) == desempilha(pil))
     empilha(pil, 1);
@@ -178,7 +181,7 @@ void exec_maquina(Maquina *m, int n) {
   case PRN:
     printf("%d\n", desempilha(pil));
     break;
-	
+
 	//novas funcoes
   case STL:
     m->Mem[arg+rbp] = desempilha(pil);
@@ -190,7 +193,7 @@ void exec_maquina(Maquina *m, int n) {
     empilha(pil, desempilha());
     break;
   }
-    
+
 	D(imprime(pil,5));
 	D(puts("\n"));
 
