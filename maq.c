@@ -190,7 +190,7 @@ void exec_maquina(Maquina *m, int n) {
     empilha(pil, m->Mem[arg + rbp]);
     break;
   case ATR:
-    empilha(pil, desempilha());
+    empilha(pil, desempilha(pil)[arg]);
     break;
   }
 

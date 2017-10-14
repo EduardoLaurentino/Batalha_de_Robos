@@ -34,7 +34,8 @@ typedef enum {
 typedef enum {
   NUM,
   ACAO,
-  VAR
+  VAR,
+  CELULA
 } Tipo;
 
 /*typedef struct{

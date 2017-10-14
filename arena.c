@@ -129,7 +129,7 @@ void RemoveExercito(Arena *a, int num_exercito); {
   a->exercitos[num_exercito]->*celula_base->base = 0; //retira a base
 }
 
-void Sistema(Arena *a, INSTR ip){
+void Sistema(Arena *a, Maquina *m){
 
 }
 
@@ -156,7 +156,7 @@ void escalonador(Arena *a, int quant_rod){
 }
 
 void destroi_arena(Arena *a){
-    free(a);
+  free(a);
 }
 
 void destroi_celula(Celula *c){
