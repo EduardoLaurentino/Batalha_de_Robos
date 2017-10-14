@@ -3,7 +3,7 @@
 #include "arena.h"
 
 Arena *cria_arena() {
-  Arena *a = (Arena*)malloc(sizeof(Arena));
+  Arena *a = (Arena)malloc(sizeof(Arena));
   if (!a) Fatal("Memória insuficiente",4);
   a->tempo = 0;
   a->topo_ex = 0;
@@ -87,13 +87,19 @@ Celula *cria_celula(/*sem argumentos*/){
 	Celula *c = (Celula)malloc(sizeof(Celula));
 	if(!c) Fatal("Memória insuficiente!",4);
 
-    return c;
+  return c;
 }
 
+Exercito *cria_exercito(){
+  Exercito *e = (Exercito)malloc(sizeof(Exercito));
+  if(!e) Fatal("Memória insuficiente!", 4);
+
+  return e;
+}
 
 void Atualiza(Arena *a){
     int i;
-    for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 10 instruções
+    for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
         exec_maquina(a->registros[i], 50);
     }
     a->tempo++; //avança uma unidade de tempo
@@ -135,6 +141,7 @@ int verifica_continuidade(Arena *a, int max_rod){
         if (a->exercitos[i]->ativo == 1) cont++;
         if (cont > 1) return 1; //se há pelo menos dois exercitos ativos, continua
     }
+    return 0;
 }
 
 void registro(Arena *a, Maquina *m){
@@ -148,6 +155,14 @@ void escalonador(Arena *a, int quant_rod){
     }
 }
 
-void destroi_arena(Arena *m){
-    free(m);
+void destroi_arena(Arena *a){
+    free(a);
+}
+
+void destroi_celula(Celula *c){
+  free(c);
+}
+
+void destroi_exercito(Exercito *e){
+  free(e);
 }

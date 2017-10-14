@@ -32,7 +32,7 @@ typedef struct {
 
 /*-------MÉTODOS---------*/
 
-Arena *cria_arena(/*sem argumentos?*/); //construtor da arena
+Arena *cria_arena(/*sem argumentos*/); //construtor da arena
 
 Celula *cria_celula(); //construtor de uma celula;
 
