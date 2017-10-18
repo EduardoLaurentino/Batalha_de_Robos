@@ -129,7 +129,7 @@ void RemoveExercito(Arena *a, int num_exercito); {
   a->exercitos[num_exercito]->*celula_base->base = 0; //retira a base
 }
 
-void Sistema(Arena *a, Maquina *m){
+void Sistema(int op, Maquina *m){
 
 }
 

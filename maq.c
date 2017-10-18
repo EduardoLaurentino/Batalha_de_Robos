@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "maq.h"
+#include "arena.c"
 
 /* #define DEBUG */
 
@@ -31,6 +32,10 @@ char *CODES[] = {
   "PRN",
   "STL",
   "RCE",
+  "MOV",
+  "EXTR",
+  "POR"
+  "ATK",
 };
 
 #else
@@ -68,6 +73,12 @@ void destroi_maquina(Maquina *m) {
 #define pil (&m->pil)
 #define exec (&m->exec)
 #define prg (m->prog)
+
+#define mover 1
+#define extrair 2
+#define depositar 3
+#define atacar 4
+
 
 void exec_maquina(Maquina *m, int n) {
   int i;
@@ -191,6 +202,18 @@ void exec_maquina(Maquina *m, int n) {
     break;
   case ATR:
     empilha(pil, desempilha(pil)[arg]);
+    break;
+  case MOV:
+    Sistema(mover, m);
+    break;
+  case EXTR:
+    Sistema(extrair, m);
+    break;
+  case POR:
+    Sistema(depositar, m);
+    break;
+  case ATK:
+    Sistema(ataque, m);
     break;
   }
 
