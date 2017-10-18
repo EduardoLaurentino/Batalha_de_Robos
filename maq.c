@@ -215,7 +215,7 @@ void exec_maquina(Maquina *m, int n) {
     empilha(pil, m->Mem[arg + rbp]);
     break;
   case ATR:
-    empilha(pil, desempilha(pil)[arg]);
+    empilha(pil, desempilha(pil)[arg]); //verificar sintáxe
     break;
   case CSIS:
     Sistema(op.t, m);
@@ -243,7 +243,7 @@ void exec_maquina(Maquina *m, int n) {
       Sistema(ataque, m);
       break;
   }  */
-  
+
 
 	D(imprime(pil,5));
 	D(puts("\n"));

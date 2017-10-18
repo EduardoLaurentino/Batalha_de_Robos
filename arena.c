@@ -116,9 +116,7 @@ Exercito *cria_exercito(){
 
 void Atualiza(Arena *a){
     int i;
-    for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
-        exec_maquina(a->registros[i], 50);
-    }
+
     a->tempo++; //avança uma unidade de tempo
 }
 
@@ -146,7 +144,16 @@ void RemoveExercito(Arena *a, int num_exercito); {
   a->exercitos[num_exercito]->*celula_base->base = 0; //retira a base
 }
 
-void Sistema(OPERANDO op, Maquina *m){
+int verifica_ocupacao(Arena *a, int x, int y){ //verifica disponibilidade de conquista da célula (se existir)
+  if (x < 0 || y < 0 || x >= 100 || y >= 100) return 1; //indisponibilidade ~= estar ocupado
+  else return a.celulas[x][y]->ocupacao; //verificar sintáxe
+}
+
+#define x (m->posicao->x)
+#define y (m->posicao->y)
+#define endereco_robo (m->posicao)
+
+void Sistema(Arena *a, OPERANDO op, Maquina *m){
   int dir = op.valor;
   switch (op.t){
     case MOV:
@@ -155,7 +162,7 @@ void Sistema(OPERANDO op, Maquina *m){
         // nao faz sentido se mover pra mesma celula.
         break;
         case norte:
-        
+          if (verifica_ocupacao(a, x - 1, y) == 0) endereco_robo =
         break;
         case nordeste:
         ...
@@ -270,7 +277,10 @@ void registro(Arena *a, Maquina *m){
 void escalonador(Arena *a, int quant_rod){
     int i;
     for(i = 0; i < quant_rod; i++){
-        Atualiza(a);
+        for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
+          exec_maquina(a->registros[i], 50);
+          Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
+        }
     }
 }
 
