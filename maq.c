@@ -32,11 +32,14 @@ char *CODES[] = {
   "PRN",
   "STL",
   "RCE",
+  "CSIS" //chamada ao sistema (mov, extrair, depositar e atk)
+};
+
+/*
   "MOV",
   "EXTR",
   "POR"
-  "ATK",
-};
+  "ATK",*/
 
 #else
 #  define D(X)
@@ -73,19 +76,30 @@ void destroi_maquina(Maquina *m) {
 #define pil (&m->pil)
 #define exec (&m->exec)
 #define prg (m->prog)
-
+/*
+// correlacionamos algumas ações de um robo com numeros.
 #define mover 1
 #define extrair 2
 #define depositar 3
 #define atacar 4
 
+// fizemos uma correspondencia entre as vizinhancas de uma celula com numeros.
+#define aqui 0
+#define norte 1
+#define nordeste 2
+#define sudeste 3
+#define sul 4
+#define sudoeste 5
+#define noroeste 6
+*/
 
 void exec_maquina(Maquina *m, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
     OpCode   opc = prg[ip].instr;
-    OPERANDO arg = prg[ip].op;
+    int arg = prg[ip].argumento;
+    OPERANDO op = prg[ip].op;
 
     D(printf("%3d: %-4.4s %d\n     ", ip, CODES[opc], arg));
 
@@ -203,19 +217,33 @@ void exec_maquina(Maquina *m, int n) {
   case ATR:
     empilha(pil, desempilha(pil)[arg]);
     break;
-  case MOV:
-    Sistema(mover, m);
-    break;
-  case EXTR:
-    Sistema(extrair, m);
-    break;
-  case POR:
-    Sistema(depositar, m);
-    break;
-  case ATK:
-    Sistema(ataque, m);
+  case CSIS:
+    Sistema(op.t, m);
     break;
   }
+  // Caso nao entre em nenhum "case", ele sai do switch e segue o baile?
+
+
+  // novas funcoes - fase2
+  // Saindo do switch de cima, sabemos que o opc = 'nulo' e, entao, fara um switch baseado no op (mover, extrair...)
+/* No caso MOV, que eh um tipo da struct "OPERANDO", a variavel "int valor" representa a direção.
+
+*/
+ /* switch(op.t){
+    case MOV:
+      Sistema(op.t, op.valor, m);
+      break;
+    case EXTR:
+      Sistema(extrair, m);
+      break;
+    case POR:
+      Sistema(depositar, m);
+      break;
+    case ATK:
+      Sistema(ataque, m);
+      break;
+  }  */
+  
 
 	D(imprime(pil,5));
 	D(puts("\n"));

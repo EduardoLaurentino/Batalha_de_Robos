@@ -27,6 +27,7 @@ typedef enum {
   STL,
   RCE,
   ATR,
+  CSIS, //chamada ao sistema (mov, extrair, depositar e atk)
 } OpCode;
 
 /* Tipos dos operandos */
@@ -35,7 +36,11 @@ typedef enum {
   NUM,
   ACAO,
   VAR,
-  CELULA
+  CELULA,
+  MOV,
+  EXTR,
+  POR,
+  ATK,
 } Tipo;
 
 /*typedef struct{
@@ -69,5 +74,6 @@ typedef struct {
 /* Instrução */
 typedef struct {
   OpCode instr;
+  int argumento;
   OPERANDO op;
 } INSTR;

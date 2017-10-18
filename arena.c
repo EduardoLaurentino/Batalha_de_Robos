@@ -83,6 +83,23 @@ Arena *cria_arena() {
   return a;
 }
 
+// correlacionamos algumas ações de um robo com numeros.
+/*
+#define mover 1
+#define extrair 2
+#define depositar 3
+#define atacar 4
+*/
+// fizemos uma correspondencia entre as vizinhancas de uma celula com numeros.
+#define aqui 0
+#define norte 1
+#define nordeste 2
+#define sudeste 3
+#define sul 4
+#define sudoeste 5
+#define noroeste 6
+
+
 Celula *cria_celula(/*sem argumentos*/){
 	Celula *c = (Celula)malloc(sizeof(Celula));
 	if(!c) Fatal("Memória insuficiente!",4);
@@ -129,8 +146,110 @@ void RemoveExercito(Arena *a, int num_exercito); {
   a->exercitos[num_exercito]->*celula_base->base = 0; //retira a base
 }
 
-void Sistema(int op, Maquina *m){
-
+void Sistema(OPERANDO op, Maquina *m){
+  int dir = op.valor;
+  switch (op.t){
+    case MOV:
+       switch(dir){
+        case aqui:
+        // nao faz sentido se mover pra mesma celula.
+        break;
+        case norte:
+        
+        break;
+        case nordeste:
+        ...
+        break;
+        case sudeste:
+        ...
+        break;
+        case sul:
+        ...
+        break;
+        case sudoeste:
+        ...
+        break;
+        case noroeste:
+        ...
+        break;
+      }
+      break;
+    case EXTR:
+      switch(dir){
+        case aqui:
+        ...
+        break;
+        case norte:
+        ...
+        break;
+        case nordeste:
+        ...
+        break;
+        case sudeste:
+        ...
+        break;
+        case sul:
+        ...
+        break;
+        case sudoeste:
+        ...
+        break;
+        case noroeste:
+        ...
+        break;
+      }
+      break;
+    case POR:
+       switch(dir){
+        case aqui:
+        ...
+        break;
+        case norte:
+        ...
+        break;
+        case nordeste:
+        ...
+        break;
+        case sudeste:
+        ...
+        break;
+        case sul:
+        ...
+        break;
+        case sudoeste:
+        ...
+        break;
+        case noroeste:
+        ...
+        break;
+      }
+      break;
+    case ATK:
+       switch(dir){
+        case aqui:
+        ...
+        break;
+        case norte:
+        ...
+        break;
+        case nordeste:
+        ...
+        break;
+        case sudeste:
+        ...
+        break;
+        case sul:
+        ...
+        break;
+        case sudoeste:
+        ...
+        break;
+        case noroeste:
+        ...
+        break;
+      }
+      break;
+  }
 }
 
 int verifica_continuidade(Arena *a, int max_rod){
