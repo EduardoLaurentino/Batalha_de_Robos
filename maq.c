@@ -150,7 +150,7 @@ void exec_maquina(Maquina *m, int n) {
   case CALL:
     empilha(exec, ip);
     empilha (exec, rbp);
-    rbp = (exec->topo);
+    rbp = (exec->topo + 1); //correção do topo da pilha.
     ip = arg;
     continue;
   case RET:
@@ -209,15 +209,25 @@ void exec_maquina(Maquina *m, int n) {
 
 	//novas funcoes
   case STL:
-    m->Mem[arg+rbp] = desempilha(pil);
+     exec->val[arg+rbp] = desempilha(pil);
+    //m->Mem[arg+rbp] = desempilha(pil);
     break;
   case RCE:
-    empilha(pil, m->Mem[arg + rbp]);
+    empilha(pil, exec->val[arg + rbp]);
+    //empilha(pil, m->Mem[arg + rbp]);
+    break;
+  case ALC:
+    empilhar(exec, exec->rbp)
+    exec->rbp = exec->topo;
+    exec->topo = exec->topo + arg;
+    break;
+  case FRE:
+    exec->topo = exec-> topo - 5;
     break;
   case ATR:
     empilha(pil, desempilha(pil)[arg]); //verificar sintáxe
     break;
-  case CSIS:
+  case SIS:
     Sistema(op.t, m);
     break;
   }
