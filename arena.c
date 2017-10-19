@@ -158,6 +158,7 @@ void atualiza_posicao(Maquina *m, Arena *a, int x, int y)
 void Sistema(Arena *a, OPERANDO op, Maquina *m){
   int dir = op.valor;
   switch (op.t){
+
     case MOV:
        switch(dir){
         case aqui:
@@ -225,11 +226,19 @@ void Sistema(Arena *a, OPERANDO op, Maquina *m){
           break;
       }
       break;
+
+
     case EXTR:
       switch(dir){
         case aqui:
-        ...
-        break;
+          if (a->celulas[x][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais
+            a->celulas[x][y]->cristais -= 1;
+            m->cristais += 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case norte:
           if (verifica_ocupacao(a, x - 1, y) == 0 && a->celulas[x-1][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais
             a->celulas[x-1][y]->cristais -= 1;
@@ -286,31 +295,77 @@ void Sistema(Arena *a, OPERANDO op, Maquina *m){
           break;
       }
       break;
+
+
     case POR:
-       switch(dir){
+      switch(dir){
         case aqui:
-        ...
-        break;
+          if (m->cristais > 0) { //verifica se tem cristais pra por
+            a->celulas[x][y]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case norte:
-        ...
-        break;
+          if (verifica_ocupacao(a, x - 1, y) == 0 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
+            a->celulas[x-1][y]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case nordeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && m->cristais > 0) {
+            a->celulas[x-1][y+1]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case sudeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x, y + 1) == 0 && m->cristais > 0) {
+            a->celulas[x][y+1]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case sul:
-        ...
-        break;
+          if (verifica_ocupacao(a, x + 1, y) == 0 && m->cristais > 0) {
+            a->celulas[x + 1][y]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case sudoeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x, y - 1) == 0 && m->cristais > 0) {
+            a->celulas[x][y-1]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case noroeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && m->cristais > 0) {
+            a->celulas[x - 1][y - 1]->cristais += 1;
+            m->cristais -= 1;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
       }
       break;
+
+
     case ATK:
        switch(dir){
         case aqui:
