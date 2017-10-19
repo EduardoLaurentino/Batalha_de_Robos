@@ -149,9 +149,11 @@ int verifica_ocupacao(Arena *a, int x, int y){ //verifica disponibilidade de con
   else return a.celulas[x][y]->ocupacao; //verificar sintáxe
 }
 
+void atualiza_posicao(Maquina *m, Arena *a, int x, int y)
+
 #define x (m->posicao->x)
 #define y (m->posicao->y)
-#define endereco_robo (m->posicao)
+//#define endereco_robo (m->posicao)
 
 void Sistema(Arena *a, OPERANDO op, Maquina *m){
   int dir = op.valor;
@@ -162,23 +164,65 @@ void Sistema(Arena *a, OPERANDO op, Maquina *m){
         // nao faz sentido se mover pra mesma celula.
         break;
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0) endereco_robo =
+          if (verifica_ocupacao(a, x - 1, y) == 0) { //verifica se a célula para a qual quer ir existe e esta vazia
+            m->posicao = &celulas[x - 1][y]; //guarda o endereço da nova célula na máquina
+            m->posicao->ocupacao = 0; //muda o status da celula onde tava para desocupada
+            //m->posicao->maquina_no_local = null;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
         break;
         case nordeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x - 1, y + 1) == 0) {
+            m->posicao = &celulas[x - 1][y + 1];
+            m->posicao->ocupacao = 0;
+            //m->posicao->maquina_no_local = null;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case sudeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x, y + 1) == 0) {
+            m->posicao = &celulas[x][y + 1];
+            m->posicao->ocupacao = 0;
+            //m->posicao->maquina_no_local = null;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case sul:
-        ...
-        break;
+          if (verifica_ocupacao(a, x + 1, y) == 0) {
+            m->posicao = &celulas[x + 1][y];
+            m->posicao->ocupacao = 0;
+            //m->posicao->maquina_no_local = null;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case sudoeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x, y - 1) == 0) {
+            m->posicao = &celulas[x][y - 1];
+            m->posicao->ocupacao = 0;
+            //m->posicao->maquina_no_local = null;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
         case noroeste:
-        ...
-        break;
+          if (verifica_ocupacao(a, x - 1, y - 1) == 0) {
+            m->posicao = &celulas[x - 1][y - 1];
+            m->posicao->ocupacao = 0;
+            //m->posicao->maquina_no_local = null;
+          }
+          else{
+            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
+          }
+          break;
       }
       break;
     case EXTR:
