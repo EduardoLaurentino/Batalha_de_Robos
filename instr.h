@@ -26,8 +26,10 @@ typedef enum {
   PRN,
   STL,
   RCE,
+  FRE,
+  ALC,
   ATR,
-  CSIS, //chamada ao sistema (mov, extrair, depositar e atk)
+  SIS, //chamada ao sistema (mov, extrair, depositar e atk)
 } OpCode;
 
 /* Tipos dos operandos */
