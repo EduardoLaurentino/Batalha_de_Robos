@@ -55,6 +55,7 @@ Maquina *cria_maquina(INSTR *p) {
   m->ip.val.n = 0;
   m->rbp.val.n = 0; //novo registrador
   m->prog = p;
+  m->energia = 1000;
   return m;
 }
 

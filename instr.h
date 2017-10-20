@@ -49,6 +49,7 @@ typedef struct {
   short int cristais;
   short int ocupado;
   short int base;
+  Maquina* m = maquina_na_celula;
 } Celula;
 
 /* Tipos dos operandos */

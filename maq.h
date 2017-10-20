@@ -11,6 +11,7 @@ typedef struct {
   OPERANDO rbp;
   int cristais;
   int pos[2];
+  int energia; //começará com 1000 pontos de energia
   //int registro; //numero de registro na arena
 } Maquina;
 
