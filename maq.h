@@ -7,11 +7,11 @@ typedef struct {
   Pilha exec;
   OPERANDO Mem[MAXMEM];
   INSTR *prog;
-  int ip;
-  int rbp; //novo registrador
+  OPERANDO ip;
+  OPERANDO rbp;
   int cristais;
-  int registro; //numero de registro na arena
-  *Celula posicao;
+  int pos[2];
+  //int registro; //numero de registro na arena
 } Maquina;
 
 Maquina *cria_maquina(INSTR *p);

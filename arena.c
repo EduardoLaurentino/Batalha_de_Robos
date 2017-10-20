@@ -1,159 +1,120 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "arena.h"
 
-Arena *cria_arena() {
-  Arena *a = (Arena)malloc(sizeof(Arena));
+static void Erro(char *msg) {
+  fprintf(stderr,"%s\n", msg);
+}
+static void Fatal(char *msg, int cod) {
+  Erro(msg);
+  exit(cod);
+}
+
+Arena *a;
+
+Arena *cria_arena(int tamanho, int quantos_jogadores) {
+  Arena *a = (Arena*)malloc(sizeof(Arena));
   if (!a) Fatal("Memória insuficiente",4);
+
   a->tempo = 0;
   a->topo_ex = 0;
   a->topo_reg = 0;
 
-  //INICIA UM MAPA ESPECIFICO
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; i < 100; j++) {
-      celulas[i][j].x = i;
-      celulas[i][j].y = j;
-      celulas[i][j].base = 0,
-      celulas[i][j].ocupacao = 0,
-    }
+  //alocacao dinamica de memoria para a arena
+
+  //vetor de ponteiros
+  Celula **celulas = (Celula**)malloc(tamanho * sizeof(Celula*));
+  for (int i = 0; i < tamanho; i++){
+    //aloca um vetor de Celulas para cada posição do vetor de ponteiros
+    celulas[i] = (Celula*) malloc(tamanho * sizeof(Celula));
+      //percorre o vetor de Celulas atual, determinando caracteristicas de cada uma
+      for (int j = 0; j < tamanho; j++) {
+        celulas[i][j].x = i;
+        celulas[i][j].y = j;
+        celulas[i][j].terreno = TERRA;
+        celulas[i][j].cristais = 2;
+
+        if (i%2 == 0)
+        celulas[i][j].ocupado = 0;
+        else celulas[i][j].ocupado = 1;
+      }
   }
+  /////////////////////
+  Maquina *registros[quantos_jogadores];
 
-  /*  terrenos:
-  0 = normal
-  1 = montanha
-  2 = agua
-  3 = lama
-
-  cristal: quanto maior o numero, melhor o cristal  */
-
-  for (int i = 0; i < 20; i++) {
-    for (int j = 0; i < 20; j++) {
-      celulas[i][j].terreno = 0;
-      celulas[i][20+j].terreno = 2;
-      celulas[i][40+j].terreno = 3;
-      celulas[i][60+j].terreno = 0;
-      celulas[i][80+j].terreno = 0;
-
-      celulas[20+i][j].terreno = 2;
-      celulas[20+i][20+j].terreno = 2;
-      celulas[20+i][40+j].terreno = 0;
-      celulas[20+i][60+j].terreno = 1;
-      celulas[20+i][80+j].terreno = 0;
-
-      celulas[40+i][j].terreno = 3;
-      celulas[40+i][20+j].terreno = 0;
-      celulas[40+i][40+j].terreno = 1;
-      celulas[40+i][60+j].terreno = 0;
-      celulas[40+i][80+j].terreno = 3;
-
-      celulas[60+i][j].terreno = 0;
-      celulas[60+i][20+j].terreno = 1;
-      celulas[60+i][40+j].terreno = 0;
-      celulas[60+i][60+j].terreno = 2;
-      celulas[60+i][80+j].terreno = 2;
-
-      celulas[80+i][j].terreno = 0;
-      celulas[80+i][20+j].terreno = 0;
-      celulas[80+i][40+j].terreno = 3;
-      celulas[80+i][60+j].terreno = 2;
-      celulas[80+i][80+j].terreno = 0;
-    }
-  }
-
-  //cria 200 cristais
-  //talvez random esteja errado \/
-  srand(time(NULL));
-  for (int i = 0; i < 200; i++) {
-      int num1 = rand() % 99;
-      int num2 = rand() % 99;
-
-      //se a celula ja tiver cristais, so adiciona mais
-      //terreno mais dificil = mais cristais
-      switch (celulas[num1][num2].terreno)
-        case 0:
-          celulas[num1][num2].cristal += 1,
-        case 1:
-          celulas[num1][num2].cristal += 5,
-        case 2:
-          celulas[num1][num2].cristal += 2,
-        case 3:
-          celulas[num1][num2].cristal += 3,
-  }
   return a;
 }
 
-// correlacionamos algumas ações de um robo com numeros.
-/*
-#define mover 1
-#define extrair 2
-#define depositar 3
-#define atacar 4
-*/
-// fizemos uma correspondencia entre as vizinhancas de uma celula com numeros.
-#define aqui 0
-#define norte 1
-#define nordeste 2
-#define sudeste 3
-#define sul 4
-#define sudoeste 5
-#define noroeste 6
+#define registros (a->registros)
+#define tempo (a->tempo)
+#define exercitos (a->exercitos)
+#define celulas (a->celulas)
+#define topo_ex (a->topo_ex)
+#define topo_reg (a->topo_reg)
 
-
-Celula *cria_celula(/*sem argumentos*/){
-	Celula *c = (Celula)malloc(sizeof(Celula));
-	if(!c) Fatal("Memória insuficiente!",4);
-
-  return c;
-}
-
-Exercito *cria_exercito(){
-  Exercito *e = (Exercito)malloc(sizeof(Exercito));
-  if(!e) Fatal("Memória insuficiente!", 4);
-
-  return e;
-}
-
-void Atualiza(Arena *a){
-    int i;
-
-    a->tempo++; //avança uma unidade de tempo
+void RegistroMaquina(Arena *a, Maquina *m) {
+  //coloca o endereco da maquina virtual recebida no vetor de registros
+  registros[topo_reg++] = *m;
 }
 
 //insere o novo exercito e cria uma base para ele
-void InsereExercito(Arena *a); {
-  a->exercitos[topo_ex]->ativo = 1;
+void InsereExercito(Arena *a) {
+  //ativa exercito
+  exercitos[topo_ex].ativo = 1;
 
-  //talvez random esteja errado \/
-  a->exercitos[topo_ex]->celula_base = &celula[rand() % 97][rand() % 97]; //define o local da base
-  a->exercitos[topo_ex]->celula_base->base = topo_ex; //define a celula com uma base com o numero do exercito
+  //define o local *aleatorio* da base
+  srand(time(NULL));
+  exercitos[topo_ex].pos_celula_base[0] = rand() % 97; //x
+  exercitos[topo_ex].pos_celula_base[1] = rand() % 97; //y
 
+  //registra na celula o numero do exercito que tem base ali
+  celulas[exercitos[topo_ex].pos_celula_base[0]][exercitos[topo_ex].pos_celula_base[1]].base = topo_ex;
+
+  //os robos do exercito devem estar em posicoes especificas do vetor de registros:
+  //assim o endereco de cada um tambem e' colocado no vetor de robos do exercito
   for (int i = 0; i < 3; i++) {
-    a->exercitos[topo_ex].robos[i] = registros[(topo_ex*3) + i];
-    a->exercitos[topo_ex].robos[i]->posicao = a->exercitos[topo_ex].celula_base+i+1; //bota na maquina qual a posicao dela na arena
-    a->exercitos[topo_ex].robos[i]->posicao->ocupacao = 1; //ativa ocupacao da celula
-    a->exercitos[topo_ex].robos[i]->posicao->maquina_no_local = a->exercitos[topo_ex].robos[i]; //bota na celula a info da maquina que esta ocupando o local
+    exercitos[topo_ex].robos[i] = registros[(topo_ex*3) + i];
+
+    //coloca na maquina qual a posicao dela na arena
+    exercitos[topo_ex].robos[i]->pos[0] = exercitos[topo_ex].pos_celula_base[0]+i+1;
+    exercitos[topo_ex].robos[i]->pos[1] = exercitos[topo_ex].pos_celula_base[1];
+
+    //ativa ocupacao da celula
+    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
+
+    //NAO IMPLEMENTADO AINDA
+    //coloca na celula a info da maquina que esta ocupando o local
+    //celulas[pos_celula_base[0]+i+1][pos_celula_base[1]].maquina_no_local = exercitos[topo_ex].robos[i];
   }
+  topo_ex++;
 }
 
-void RemoveExercito(Arena *a, int num_exercito); {
-  a->exercitos[num_exercito]->ativo = 0;
+void RemoveExercito(Arena *a, int num_ex) {
+  //desativa exercito
+  exercitos[num_ex].ativo = 0;
+
   for (int i = 0; i < 3; i++)
-    a->exercitos[num_exercito].robos[i]->posicao->ocupacao = 0; //retira todos os robos do exercito
+    //retira a ocupacao das celulas onde os robos do exercito estavam
+    celulas[exercitos[num_ex].robos[i]->pos[0]][exercitos[num_ex].robos[i]->pos[1]].ocupado = 0;
 
-  a->exercitos[num_exercito]->*celula_base->base = 0; //retira a base
+    //retira a base
+    celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = 0;
 }
+
+void destroi_arena(Arena *a) {
+  free(a);
+}
+
+/*===============================================*/
 
 int verifica_ocupacao(Arena *a, int x, int y){ //verifica disponibilidade de conquista da célula (se existir)
   if (x < 0 || y < 0 || x >= 100 || y >= 100) return 1; //indisponibilidade ~= estar ocupado
   else return a.celulas[x][y]->ocupacao; //verificar sintáxe
 }
 
-void atualiza_posicao(Maquina *m, Arena *a, int x, int y)
-
 #define x (m->posicao->x)
 #define y (m->posicao->y)
-//#define endereco_robo (m->posicao)
 
 void Sistema(Arena *a, OPERANDO op, Maquina *m){
   int dir = op.valor;
@@ -162,6 +123,7 @@ void Sistema(Arena *a, OPERANDO op, Maquina *m){
     case MOV:
        switch(dir){
         case aqui:
+          ///BOM ENERGIA
         // nao faz sentido se mover pra mesma celula.
         break;
         case norte:
@@ -405,7 +367,7 @@ int verifica_continuidade(Arena *a, int max_rod){
     return 0;
 }
 
-void registro(Arena *a, Maquina *m){
+void RegistroMaquina(Arena *a, Maquina *m){
 	a->registros[a->topo_reg++] = m;
 }
 
@@ -417,16 +379,4 @@ void escalonador(Arena *a, int quant_rod){
           Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
         }
     }
-}
-
-void destroi_arena(Arena *a){
-  free(a);
-}
-
-void destroi_celula(Celula *c){
-  free(c);
-}
-
-void destroi_exercito(Exercito *e){
-  free(e);
 }

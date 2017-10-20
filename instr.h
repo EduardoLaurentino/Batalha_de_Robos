@@ -32,6 +32,25 @@ typedef enum {
   SIS, //chamada ao sistema (mov, extrair, depositar e atk)
 } OpCode;
 
+/* Tipo de terreno */
+typedef enum {
+  ESTRADA,
+  TERRA,
+  MONTANHA,
+  AGUA,
+  LAMA
+} Terreno;
+
+/* Célula */
+typedef struct {
+  Terreno terreno;
+  short int x;
+  short int y;
+  short int cristais;
+  short int ocupado;
+  short int base;
+} Celula;
+
 /* Tipos dos operandos */
 /* no momento, são todos inteiros */
 typedef enum {
@@ -45,22 +64,6 @@ typedef enum {
   ATK,
 } Tipo;
 
-/*typedef struct{
-  int x;
-  int y;
-  int cristais;
-} Atributo;*/
-
-/* Operando */
-/* typedef struct { */
-/*   Tipo t; */
-/*   union { */
-/* 	int n; */
-/* 	int ac; */
-/* 	int v; */
-/*   }; */
-/* } OPERANDO; */
-//typedef int OPERANDO;
 
 typedef struct {
    Tipo t;
@@ -72,10 +75,15 @@ typedef struct {
    };*/
 } OPERANDO;
 
-
 /* Instrução */
+typedef struct {
+  OpCode instr;
+  OPERANDO op;
+} INSTR;
+
+/* Instrução
 typedef struct {
   OpCode instr;
   int argumento;
   OPERANDO op;
-} INSTR;
+} INSTR;*/
