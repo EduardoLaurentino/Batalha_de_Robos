@@ -138,6 +138,31 @@ int retira_energia_movimento(Maquina *m, Terreno terreno){
   }
 }
 
+int retira_energia_extracao(Maquina *m, Terreno terreno){
+    switch(terreno){
+      case AGUA:
+        if(m->energia >= 5) {m->energia -= 5; return 1;}
+        else return 0;
+        break;
+      case LAMA:
+        if(m->energia >= 7) {m->energia -= 7; return 1;}
+        else return 0;
+        break;
+      case TERRA:
+        if(m->energia >= 9) {m->energia -= 9; return 1;}
+        else return 0;
+        break;
+      case ESTRADA:
+        if(m->energia >= 12) {m->energia -= 12; return 1;}
+        else return 0;
+        break;
+      case MONTANHA:
+        if(m->energia >= 15) {m->energia -= 15; return 1;}
+        else return 0;
+        break;
+  }
+}
+
 #define x (m->pos[0])
 #define y (m->pos[1])
 
@@ -154,7 +179,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
         break;
 
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_movimento(m, a->celulas[x-1][y]->terreno) == 1)) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_movimento(m, a->celulas[x-1][y]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
             a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
             m->pos[0] = x - 1;
             m->pos[1] = y; //atualiza posicao robo
@@ -165,7 +190,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
           else return 0;
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_movimento(m, a->celulas[x-1][y+1]->terreno) == 1)) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_movimento(m, a->celulas[x-1][y+1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
             a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
             m->pos[0] = x - 1;
             m->pos[1] = y + 1; //atualiza posicao robo
@@ -176,7 +201,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
           else return 0;
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_movimento(m, a->celulas[x][y+1]->terreno) == 1)) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_movimento(m, a->celulas[x][y+1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
             a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
             m->pos[0] = x;
             m->pos[1] = y + 1; //atualiza posicao robo
@@ -187,7 +212,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
           else return 0;
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_movimento(m, a->celulas[x+1][y]->terreno) == 1)) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_movimento(m, a->celulas[x+1][y]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
             a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
             m->pos[0] = x + 1;
             m->pos[1] = y; //atualiza posicao robo
@@ -198,7 +223,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
           else return 0;
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_movimento(m, a->celulas[x][y-1]->terreno) == 1)) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_movimento(m, a->celulas[x][y-1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
             a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
             m->pos[0] = x;
             m->pos[1] = y - 1; //atualiza posicao robo
@@ -209,7 +234,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
           else return 0;
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_movimento(m, a->celulas[x-1][y-1]->terreno) == 1)) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_movimento(m, a->celulas[x-1][y-1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
             a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
             m->pos[0] = x - 1;
             m->pos[1] = y - 1; //atualiza posicao robo
@@ -226,67 +251,60 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
     case EXTR:
       switch(dir){
         case aqui:
-          if (a->celulas[x][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais
+          if (retira_energia_extracao(m, a->celulas[x][y]->terreno) == 1 && a->celulas[x][y]->cristais > 0) { //só de tentar extrair já perde energia, mas só vai conseguir se tiver cristais disponiveis
             a->celulas[x][y]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && a->celulas[x-1][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais
+          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_extracao(m, a->celulas[x - 1][y]->terreno) == 1 && a->celulas[x-1][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais
             a->celulas[x-1][y]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && a->celulas[x-1][y+1]->cristais > 0) {
+          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_extracao(m, a->celulas[x - 1][y + 1]->terreno) == 1 && a->celulas[x-1][y+1]->cristais > 0) {
             a->celulas[x-1][y+1]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && a->celulas[x][y+1]->cristais > 0) {
+          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_extracao(m, a->celulas[x][y+1]->terreno) == 1 && a->celulas[x][y+1]->cristais > 0) {
             a->celulas[x][y+1]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && a->celulas[x + 1][y]->cristais > 0) {
+          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_extracao(m, a->celulas[x+1][y]->terreno) == 1 && a->celulas[x + 1][y]->cristais > 0) {
             a->celulas[x + 1][y]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && a->celulas[x][y-1]->cristais > 0) {
+          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_extracao(m, a->celulas[x][y-1]->terreno) == 1 && a->celulas[x][y-1]->cristais > 0) {
             a->celulas[x][y-1]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else 0;
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && a->celulas[x - 1][y - 1]->cristais > 0) {
+          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_extracao(m, a->celulas[x-1][y-1]->terreno) == 1 && a->celulas[x - 1][y - 1]->cristais > 0) {
             a->celulas[x - 1][y - 1]->cristais -= 1;
             m->cristais += 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
       }
       break;
