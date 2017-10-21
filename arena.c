@@ -188,7 +188,7 @@ void destroi_arena(Arena *a) {
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo:
-int verifica_exercito_ativo(Arena *a, Exercito exerc){
+int verifica_exercito_ativo(Exercito exerc){
   int i;
   for(i = 0; i < 3; i++){                         //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
     if(exerc->robos[i].energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
@@ -196,12 +196,11 @@ int verifica_exercito_ativo(Arena *a, Exercito exerc){
   return 0;                                       //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
 }
 
-int verifica_continuidade(Arena *a, int max_rod){
-    if (a->tempo > max_rod) return 0;                                       //não continua se excedeu o numero maximo de rodadas.
+int verifica_continuidade(){                                      //não continua se excedeu o numero maximo de rodadas.
     int i;
     int cont = 0;
-    for(i = 0; i < topo_ex; i++){
-        a->exercitos[i]->ativo = verifica_exercito_ativo(a, exercitos[i]); //verificar se existem exercitos ativos.
+    for(i = 0; i < 2; i++){ //dois exercitos apenas
+        exercitos[i].ativo = verifica_exercito_ativo(exercitos[i]); //verificar se existem exercitos ativos.
         if (a->exercitos[i]->ativo == 1) cont++;
         if (cont > 1) return 1;                                             //se há pelo menos dois exercitos ativos, continua
     }
@@ -212,10 +211,12 @@ int verifica_continuidade(Arena *a, int max_rod){
 void escalonador(Arena *a, int quant_rod){
     int i;
     for(i = 0; i < quant_rod; i++){
+      if(verifica_continuidade() == 1){
         for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
           exec_maquina(a->registros[i], 50);
-          Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
+          //Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
         }
+      }
     }
 }
 

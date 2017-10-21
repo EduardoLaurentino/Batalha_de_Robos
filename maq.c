@@ -271,7 +271,7 @@ void exec_maquina(Maquina *m, int n) {
   Fiquem a vontade para mudar*/
   case SIS:
     tmp.t = arg.t;
-    tmp.valor =  Sistema(arg.t, m);
+    tmp.valor = Sistema(arg.t, m);
     empilha(pil, tmp);
     break;
   }
