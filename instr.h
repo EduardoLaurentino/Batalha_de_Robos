@@ -56,11 +56,11 @@ typedef enum {
 /* Célula */
 typedef struct {
   Terreno terreno;
-  int x;
-  int y;
   int cristais;
   int ocupado;
   int base;
+  int x;
+  int y;
   int maquina_no_local; //posicao da maquina no vetor de registros
 } Celula;
 
