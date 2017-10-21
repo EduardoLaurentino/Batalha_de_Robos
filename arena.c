@@ -108,9 +108,14 @@ void destroi_arena(Arena *a) {
 
 /*===============================================*/
 
-int verifica_ocupacao(Arena *a, int x, int y){ //verifica disponibilidade de conquista da célula (se existir)
+int verifica_ocupacao(int x, int y){ //verifica disponibilidade de conquista da célula (se existir)
   if (x < 0 || y < 0 || x >= 100 || y >= 100) return 1; //indisponibilidade ~= estar ocupado
-  else return a.celulas[x][y]->ocupado; //verificar sintáxe
+  else return a->celulas[x][y]->ocupado; //verificar sintáxe
+}
+
+int celula_existe(int x, int y){
+  if (x < 0 || y < 0 || x >= 100 || y >= 100) return 0; //indisponibilidade ~= não atacavel, não pode atacar e nao perde energia
+  else return 1;
 }
 
 int retira_energia_movimento(Maquina *m, Terreno terreno){
@@ -382,26 +387,92 @@ int Sistema( OPERANDO op, Maquina *m){
     case ATK:
        switch(dir){
         case aqui:
-        ...
-        break;
+          return 0; //não faz sentido atacar a si mesmo
+          break;
         case norte:
-        ...
-        break;
+          if (celula_existe(x-1, y) == 1 && m->energia >= 30){
+            if(a->celulas[x-1][y]->ocupado == 1){
+              a->celulas->[x-1][y]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+              m->energia -= 30;//perde energia por atacar com sucesso
+              return 1;
+            }
+            else{
+              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+              return 0; //não atacou
+            }
+          }
+          else return 0;
+          break;
         case nordeste:
-        ...
-        break;
+          if (celula_existe(x-1, y+1) == 1 && m->energia >= 30){
+            if(a->celulas[x-1][y+1]->ocupado == 1){
+              a->celulas->[x-1][y+1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+              m->energia -= 30;//perde energia por atacar com sucesso
+              return 1;
+            }
+            else{
+              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+              return 0; //não atacou
+            }
+          }
+          else return 0;
+          break;
         case sudeste:
-        ...
-        break;
+          if (celula_existe(x, y+1) == 1 && m->energia >= 30){
+            if(a->celulas[x][y+1]->ocupado == 1){
+              a->celulas->[x][y+1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+              m->energia -= 30;//perde energia por atacar com sucesso
+              return 1;
+            }
+            else{
+              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+              return 0; //não atacou
+            }
+          }
+          else return 0;
+          break;
         case sul:
-        ...
-        break;
+          if (celula_existe(x+1, y) == 1 && m->energia >= 30){
+            if(a->celulas[x+1][y]->ocupado == 1){
+              a->celulas->[x+1][y]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+              m->energia -= 30;//perde energia por atacar com sucesso
+              return 1;
+            }
+            else{
+              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+              return 0; //não atacou
+            }
+          }
+          else return 0;
+          break;
         case sudoeste:
-        ...
-        break;
+          if (celula_existe(x, y-1) == 1 && m->energia >= 30){
+            if(a->celulas[x][y-1]->ocupado == 1){
+              a->celulas->[x][y-1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+              m->energia -= 30;//perde energia por atacar com sucesso
+              return 1;
+            }
+            else{
+              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+              return 0; //não atacou
+            }
+          }
+          else return 0;
+          break;
         case noroeste:
-        ...
-        break;
+          if (celula_existe(x-1, y-1) == 1 && m->energia >= 30){
+            if(a->celulas[x-1][y-1]->ocupado == 1){
+              a->celulas->[x-1][y-1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+              m->energia -= 30;//perde energia por atacar com sucesso
+              return 1;
+            }
+            else{
+              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+              return 0; //não atacou
+            }
+          }
+          else return 0;
+          break;
       }
       break;
   }
