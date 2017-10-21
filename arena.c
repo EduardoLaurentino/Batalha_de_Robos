@@ -166,7 +166,7 @@ int retira_energia_extracao(Maquina *m, Terreno terreno){
 #define x (m->pos[0])
 #define y (m->pos[1])
 
-int Sistema(Arena *a, OPERANDO op, Maquina *m){
+int Sistema( OPERANDO op, Maquina *m){
   int dir = op.valor;
   switch (op.t){
 
