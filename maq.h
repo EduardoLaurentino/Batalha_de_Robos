@@ -12,6 +12,7 @@ typedef struct {
   int cristais;
   int pos[2];
   int energia; //começará com 1000 pontos de energia
+  int exercito;
   //int registro; //numero de registro na arena
 } Maquina;
 

@@ -138,26 +138,26 @@ int retira_energia_movimento(Maquina *m, Terreno terreno){
   }
 }
 
-int retira_energia_extracao(Maquina *m, Terreno terreno){
+int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
     switch(terreno){
       case AGUA:
-        if(m->energia >= 5) {m->energia -= 5; return 1;}
+        if(m->energia >= 5 + 20) {m->energia -= 5; return 1;}
         else return 0;
         break;
       case LAMA:
-        if(m->energia >= 7) {m->energia -= 7; return 1;}
+        if(m->energia >= 7 + 20) {m->energia -= 7; return 1;}
         else return 0;
         break;
       case TERRA:
-        if(m->energia >= 9) {m->energia -= 9; return 1;}
+        if(m->energia >= 9 + 20) {m->energia -= 9; return 1;}
         else return 0;
         break;
       case ESTRADA:
-        if(m->energia >= 12) {m->energia -= 12; return 1;}
+        if(m->energia >= 12 + 20) {m->energia -= 12; return 1;}
         else return 0;
         break;
       case MONTANHA:
-        if(m->energia >= 15) {m->energia -= 15; return 1;}
+        if(m->energia >= 15 + 20) {m->energia -= 15; return 1;}
         else return 0;
         break;
   }
@@ -165,6 +165,8 @@ int retira_energia_extracao(Maquina *m, Terreno terreno){
 
 #define x (m->pos[0])
 #define y (m->pos[1])
+#define base_robo (m->base)
+#define base_inimiga ();
 
 int Sistema(Arena *a, OPERANDO op, Maquina *m){
   int dir = op.valor;
@@ -172,10 +174,9 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
 
     case MOV:
        switch(dir){
-
         case aqui: //é a operacao de descanso, que recarrega um pouco de energia
           if (m->energia < 900) {m->energia += 10; return 1;} //aumenta a energia e retorna o sucesso do procedimento
-          return 0; //se não conseguir aumentar energia
+          return 0; //se não conseguir aumentar energia,
         break;
 
         case norte:
@@ -251,7 +252,7 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
     case EXTR:
       switch(dir){
         case aqui:
-          if (retira_energia_extracao(m, a->celulas[x][y]->terreno) == 1 && a->celulas[x][y]->cristais > 0) { //só de tentar extrair já perde energia, mas só vai conseguir se tiver cristais disponiveis
+          if (retira_energia_extracao_e_por(m, a->celulas[x][y]->terreno) == 1 && a->celulas[x][y]->cristais > 0) { //só de tentar extrair já perde energia, mas só vai conseguir se tiver cristais disponiveis
             a->celulas[x][y]->cristais -= 1;
             m->cristais += 1;
             return 1;
@@ -259,49 +260,55 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
           else return 0;
           break;
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_extracao(m, a->celulas[x - 1][y]->terreno) == 1 && a->celulas[x-1][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais
+          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x - 1][y]->terreno) == 1 && a->celulas[x-1][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais
             a->celulas[x-1][y]->cristais -= 1;
             m->cristais += 1;
+            m->energia -= 20; //perda de energia maior por fazer extração em célula vizinha (fazer extração em céula vizinha ao invés de onde de está tem custo energético maior);
             return 1;
           }
           else return 0;
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_extracao(m, a->celulas[x - 1][y + 1]->terreno) == 1 && a->celulas[x-1][y+1]->cristais > 0) {
+          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x - 1][y + 1]->terreno) == 1 && a->celulas[x-1][y+1]->cristais > 0) {
             a->celulas[x-1][y+1]->cristais -= 1;
             m->cristais += 1;
+            m->energia -= 20;
             return 1;
           }
           else return 0;
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_extracao(m, a->celulas[x][y+1]->terreno) == 1 && a->celulas[x][y+1]->cristais > 0) {
+          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y+1]->terreno) == 1 && a->celulas[x][y+1]->cristais > 0) {
             a->celulas[x][y+1]->cristais -= 1;
             m->cristais += 1;
+            m->energia -= 20;
             return 1;
           }
           else return 0;
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_extracao(m, a->celulas[x+1][y]->terreno) == 1 && a->celulas[x + 1][y]->cristais > 0) {
+          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x+1][y]->terreno) == 1 && a->celulas[x + 1][y]->cristais > 0) {
             a->celulas[x + 1][y]->cristais -= 1;
             m->cristais += 1;
+            m->energia -= 20;
             return 1;
           }
           else return 0;
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_extracao(m, a->celulas[x][y-1]->terreno) == 1 && a->celulas[x][y-1]->cristais > 0) {
+          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y-1]->terreno) == 1 && a->celulas[x][y-1]->cristais > 0) {
             a->celulas[x][y-1]->cristais -= 1;
             m->cristais += 1;
+            m->energia -= 20;
             return 1;
           }
           else 0;
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_extracao(m, a->celulas[x-1][y-1]->terreno) == 1 && a->celulas[x - 1][y - 1]->cristais > 0) {
+          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x-1][y-1]->terreno) == 1 && a->celulas[x - 1][y - 1]->cristais > 0) {
             a->celulas[x - 1][y - 1]->cristais -= 1;
             m->cristais += 1;
+            m->energia -= 20;
             return 1;
           }
           else return 0;
@@ -313,67 +320,60 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
     case POR:
       switch(dir){
         case aqui:
-          if (m->cristais > 0) { //verifica se tem cristais pra por
+          if (retira_energia_extracao_e_por(m, a->celulas[x][y]->terreno) == 1 && m->cristais > 0) { //verifica se tem cristais pra por e só coloca se tiver energia, mas perde energia só de tentar
             a->celulas[x][y]->cristais += 1;
             m->cristais -= 1;
+            return 1;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
+          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x-1][y]->terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
             a->celulas[x-1][y]->cristais += 1;
             m->cristais -= 1;
+            m->energia -= 20;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && m->cristais > 0) {
+          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x - 1][y + 1]->terreno) == 1 && m->cristais > 0) {
             a->celulas[x-1][y+1]->cristais += 1;
             m->cristais -= 1;
+            m->energia -= 20;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && m->cristais > 0) {
+          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y+1]->terreno) == 1 && m->cristais > 0) {
             a->celulas[x][y+1]->cristais += 1;
             m->cristais -= 1;
+            m->energia -= 20;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && m->cristais > 0) {
+          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x+1][y]->terreno) == 1 && m->cristais > 0) {
             a->celulas[x + 1][y]->cristais += 1;
             m->cristais -= 1;
+            m->energia -= 20;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && m->cristais > 0) {
+          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y-1]->terreno) == 1 && m->cristais > 0) {
             a->celulas[x][y-1]->cristais += 1;
             m->cristais -= 1;
+            m->energia -= 20;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && m->cristais > 0) {
+          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x-1][y-1]->terreno) == 1 && m->cristais > 0) {
             a->celulas[x - 1][y - 1]->cristais += 1;
             m->cristais -= 1;
+            m->energia -= 20;
           }
-          else{
-            //deveria sinalizar de alguma maneira que não é possível fazer a mudança de local?????
-          }
+          else return 0;
           break;
       }
       break;
