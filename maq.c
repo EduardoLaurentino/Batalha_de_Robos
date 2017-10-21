@@ -52,10 +52,12 @@ Maquina *cria_maquina(INSTR *p) {
   Maquina *m = (Maquina*)malloc(sizeof(Maquina));
   if (!m) Fatal("Memória insuficiente",4);
 
-  m->ip.val.n = 0;
-  m->rbp.val.n = 0; //novo registrador
+  m->ip.valor = 0;
+  m->rbp.valor = 0; //novo registrador
   m->prog = p;
   m->energia = 1000;
+  m->exec = cria_pilha();
+  m->pil = cria_pilha();
   return m;
 }
 
@@ -66,8 +68,8 @@ void destroi_maquina(Maquina *m) {
 /* Alguns macros para facilitar a leitura do código */
 #define ip (m->ip)
 #define rbp (m->rbp) //novo registrador
-#define pil (&m->pil)
-#define exec (&m->exec)
+#define pil (m->pil)
+#define exec (m->exec)
 #define prg (m->prog)
 #define topo (exec->topo) // topo da pilha de execução
 
@@ -75,8 +77,8 @@ void exec_maquina(Maquina *m, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
-    OpCode   opc = prg[ip.val.n].instr;
-    OPERANDO arg = prg[ip.val.n].op;
+    OpCode   opc = prg[ip.valor].instr;
+    OPERANDO arg = prg[ip.valor].op;
 
     OPERANDO tmp;
     OPERANDO op1;
@@ -103,7 +105,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.val.n = op1.val.n  + op2.val.n;
+        tmp.valor = op1.valor  + op2.valor;
         empilha(pil, tmp);
       }
       break;
@@ -113,7 +115,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.val.n = op2.val.n  - op1.val.n;
+        tmp.valor = op2.valor  - op1.valor;
         empilha(pil, tmp);
       }
       break;
@@ -123,7 +125,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.val.n = op1.val.n  * op2.val.n;
+        tmp.valor = op1.valor  * op2.valor;
         empilha(pil, tmp);
       }
       break;
@@ -133,7 +135,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.val.n = op2.val.n  / op1.val.n;
+        tmp.valor = op2.valor  / op1.valor;
         empilha(pil, tmp);
       }
       break;
@@ -142,13 +144,13 @@ void exec_maquina(Maquina *m, int n) {
       ip = arg;
       continue;
     case JIT:
-      if (desempilha(pil).val.n != 0) {
+      if (desempilha(pil).valor != 0) {
         ip = arg;
         continue;
       }
       break;
     case JIF:
-      if (desempilha(pil).val.n == 0) {
+      if (desempilha(pil).valor == 0) {
         ip = arg;
         continue;
       }
@@ -157,10 +159,11 @@ void exec_maquina(Maquina *m, int n) {
   case CALL:
     empilha(exec, ip);
     empilha(exec, rbp);
-    ip = arg;
-    rbp.val.n = topo;
+    rbp.valor = topo;
+    ip.valor = arg.valor;
     continue;
   case RET:
+    topo = rbp.valor;
     rbp = desempilha(exec);
     ip = desempilha(exec);
     break;
@@ -171,8 +174,8 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
           tmp.t = NUM;
-          if (op1.val.n == op2.val.n) tmp.val.n = 1;
-          else tmp.val.n = 0;
+          if (op1.valor == op2.valor) tmp.valor = 1;
+          else tmp.valor = 0;
             empilha(pil, tmp);
       }
     break;
@@ -182,8 +185,8 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
           tmp.t = NUM;
-          if (op1.val.n < op2.val.n) tmp.val.n = 1;
-          else tmp.val.n = 0;
+          if (op1.valor < op2.valor) tmp.valor = 1;
+          else tmp.valor = 0;
             empilha(pil, tmp);
       }
     break;
@@ -193,8 +196,8 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
           tmp.t = NUM;
-          if (op1.val.n <= op2.val.n) tmp.val.n = 1;
-          else tmp.val.n = 0;
+          if (op1.valor <= op2.valor) tmp.valor = 1;
+          else tmp.valor = 0;
             empilha(pil, tmp);
       }
     break;
@@ -204,8 +207,8 @@ void exec_maquina(Maquina *m, int n) {
 
     if (op1.t == NUM && op2.t == NUM) {
       tmp.t = NUM;
-      if (op1.val.n > op2.val.n) tmp.val.n = 1;
-      else tmp.val.n = 0;
+      if (op1.valor > op2.valor) tmp.valor = 1;
+      else tmp.valor = 0;
       empilha(pil, tmp);
     }
     break;
@@ -215,8 +218,8 @@ void exec_maquina(Maquina *m, int n) {
 
     if (op1.t == NUM && op2.t == NUM) {
       tmp.t = NUM;
-      if (op1.val.n >= op2.val.n) tmp.val.n = 1;
-      else tmp.val.n = 0;
+      if (op1.valor >= op2.valor) tmp.valor = 1;
+      else tmp.valor = 0;
       empilha(pil, tmp);
     }
     break;
@@ -226,45 +229,50 @@ void exec_maquina(Maquina *m, int n) {
 
     if (op1.t == NUM && op2.t == NUM) {
       tmp.t = NUM;
-      if (op1.val.n != op2.val.n) tmp.val.n = 1;
-      else tmp.val.n = 0;
+      if (op1.valor != op2.valor) tmp.valor = 1;
+      else tmp.valor = 0;
       empilha(pil, tmp);
     }
     break;
 
   case STO:
-    m->Mem[arg.val.n] = desempilha(pil);
+    m->Mem[arg.valor] = desempilha(pil);
     break;
   case RCL:
-    empilha(pil,m->Mem[arg.val.n]);
+    empilha(pil,m->Mem[arg.valor]);
     break;
   case END:
     return;
   case PRN:
     tmp = desempilha(pil);
     printf("%d\n", tmp.t);
-    printf("%d\n", tmp.val.n);
+    printf("%d\n", tmp.valor);
     break;
 
   case STL:
-      exec->val[arg.val.n + rbp.val.n - 1] = desempilha(pil);
-      break;
+      exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava 
+      break;                                                  //da memoria. Agora desempilha da exec.
     case RCE:
-      empilha(pil, exec->val[arg.val.n + rbp.val.n - 1]);
-      break;
+      empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o erro em que RCE empilhava 
+      break;                                                 //na memoria. Agora empilha na exec.
 
   case ALC:
-    topo = topo + arg.val.n;
+    topo = topo + arg.valor; //Aloca "arg" espaços na exec. (Implementado na Fase2)
     break;
   case FRE:
-    for(i = 0; i < arg.val.n; i++)
-      desempilha(exec);
+    topo = topo - arg.valor; //Desaloca "arg" espaços na exec. (Implementado na Fase2)
     break;
 
-  //case ATR:
+  case ATR: 
+    break;
 
+  /*@Lais @Laurent:
+  Nao sei se ta certo o SIS \/, fui tentando ajudar por causa de erro de compilação. 
+  Fiquem a vontade para mudar*/
   case SIS:
-    empilha(pil, Sistema(op.t, m));
+    tmp.t = arg.t; 
+    tmp.valor =  Sistema(arg.t, m);
+    empilha(pil, tmp);
     break;
 
   }
@@ -272,6 +280,6 @@ void exec_maquina(Maquina *m, int n) {
   D(imprime(pil,5));
   D(puts("\n"));
 
-  ip.val.n++;
+  ip.valor++;
   }
 }

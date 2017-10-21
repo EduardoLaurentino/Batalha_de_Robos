@@ -29,6 +29,8 @@ Celula *cria_celula(); //construtor de uma celula
 
 OPERANDO Sistema(Arena *a, OPERANDO op);
 
+int verifica_exercito_ativo(Arena *a, Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
+
 int verifica_continuidade(Arena *a, int max_rod); //"int" para usarmos retornos 0 ou 1, simulando booleana
 
 void escalonador(Arena *a, int quant_rod);

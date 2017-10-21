@@ -168,7 +168,7 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 #define base_robo (m->base)
 #define base_inimiga ();
 
-int Sistema(Arena *a, OPERANDO op, Maquina *m){
+int Sistema( OPERANDO op, Maquina *m){
   int dir = op.valor;
   switch (op.t){
 
@@ -406,14 +406,24 @@ int Sistema(Arena *a, OPERANDO op, Maquina *m){
       break;
   }
 }
+//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
+int verifica_exercito_ativo(Arena *a, Exercito exerc){
+  int i;
+  int cont = 0;
+  for(i = 0; i < 3; i++){                         //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
+    if(exerc->robos[i].energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
+  }
+  return 0;                                       //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
+}
 
 int verifica_continuidade(Arena *a, int max_rod){
-    if (a->tempo > max_rod) return 0; //não continua se excedeu o tempo máximo
+    if (a->tempo > max_rod) return 0;                                       //não continua se excedeu o numero maximo de rodadas.
     int i;
     int cont = 0;
     for(i = 0; i < topo_ex; i++){
+        a->exercitos[i]-> ativo = verifica_exercito_ativo(a, exercitos[i]); //verificar se existem exercitos ativos.
         if (a->exercitos[i]->ativo == 1) cont++;
-        if (cont > 1) return 1; //se há pelo menos dois exercitos ativos, continua
+        if (cont > 1) return 1;                                             //se há pelo menos dois exercitos ativos, continua
     }
     return 0;
 }

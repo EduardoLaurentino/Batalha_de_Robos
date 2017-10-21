@@ -40,7 +40,7 @@ void imprime(Pilha *p, int n) {
   int i;
   printf("[");
   for (i = t; i >= 0 && i > p->topo-n; i--)
-    printf("%4d, ", p->val[i].val.n);
+    printf("%4d, ", p->val[i].valor);
   printf("]");
   return;
 }
