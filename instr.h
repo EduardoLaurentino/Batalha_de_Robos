@@ -12,6 +12,8 @@ typedef enum {
   JIF,
   CALL,
   RET,
+  STS,
+  RCS,
   EQ,
   GT,
   GE,
@@ -27,8 +29,20 @@ typedef enum {
   ALC,
   FRE,
   ATR,
-  SIS, //chamada ao sistema (mov, extrair, depositar e atk)
+  SIS,
 } OpCode;
+
+/* Tipos dos operandos */
+typedef enum {
+  NUM,
+  ACAO,
+  VAR,
+  CELULA,
+  MOV,
+  EXTR,
+  POR,
+  ATK,
+} Tipo;
 
 /* Tipo de terreno */
 typedef enum {
@@ -42,47 +56,29 @@ typedef enum {
 /* Célula */
 typedef struct {
   Terreno terreno;
-  short int x;
-  short int y;
-  short int cristais;
-  short int ocupado;
-  short int base;
-  Maquina* maquina_no_local;
+  int x;
+  int y;
+  int cristais;
+  int ocupado;
+  int base;
+  int maquina_no_local; //posicao da maquina no vetor de registros
 } Celula;
 
-/* Tipos dos operandos */
-/* no momento, são todos inteiros */
-typedef enum {
-  NUM,
-  ACAO,
-  VAR,
-  CELULA,
-  MOV,
-  EXTR,
-  POR,
-  ATK,
-} Tipo;
-
-
+/* Operando */
 typedef struct {
-   Tipo t;
-   int valor;
-   /*union {
+  Tipo t;
+  int valor;
+  /*union {
     int n;
     int ac;
     int v;
-   };*/
+    Celula cel;
+  } val;*/
 } OPERANDO;
+
 
 /* Instrução */
 typedef struct {
   OpCode instr;
   OPERANDO op;
 } INSTR;
-
-/* Instrução
-typedef struct {
-  OpCode instr;
-  int argumento;
-  OPERANDO op;
-} INSTR;*/

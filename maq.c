@@ -250,10 +250,10 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case STL:
-      exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava 
+      exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava
       break;                                                  //da memoria. Agora desempilha da exec.
     case RCE:
-      empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o erro em que RCE empilhava 
+      empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o erro em que RCE empilhava
       break;                                                 //na memoria. Agora empilha na exec.
 
   case ALC:
@@ -263,18 +263,17 @@ void exec_maquina(Maquina *m, int n) {
     topo = topo - arg.valor; //Desaloca "arg" espaços na exec. (Implementado na Fase2)
     break;
 
-  case ATR: 
+  case ATR:
     break;
 
   /*@Lais @Laurent:
-  Nao sei se ta certo o SIS \/, fui tentando ajudar por causa de erro de compilação. 
+  Nao sei se ta certo o SIS \/, fui tentando ajudar por causa de erro de compilação.
   Fiquem a vontade para mudar*/
   case SIS:
-    tmp.t = arg.t; 
+    tmp.t = arg.t;
     tmp.valor =  Sistema(arg.t, m);
     empilha(pil, tmp);
     break;
-
   }
 
   D(imprime(pil,5));

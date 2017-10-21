@@ -13,7 +13,7 @@ static void Fatal(char *msg, int cod) {
 
 Arena *a;
 
-Arena *cria_arena(int tamanho, int quantos_jogadores) {
+Arena *cria_arena() {
   Arena *a = (Arena*)malloc(sizeof(Arena));
   if (!a) Fatal("Memória insuficiente",4);
 
@@ -21,28 +21,80 @@ Arena *cria_arena(int tamanho, int quantos_jogadores) {
   a->topo_ex = 0;
   a->topo_reg = 0;
 
-  //alocacao dinamica de memoria para a arena
-
   //vetor de ponteiros
-  Celula **celulas = (Celula**)malloc(tamanho * sizeof(Celula*));
-  for (int i = 0; i < tamanho; i++){
+  Celula **celulas = (Celula**)malloc(100 * sizeof(Celula*));
+  if (!celulas) Fatal("Memória insuficiente",4);
+  for (int i = 0; i < 100; i++){
     //aloca um vetor de Celulas para cada posição do vetor de ponteiros
-    celulas[i] = (Celula*) malloc(tamanho * sizeof(Celula));
+    celulas[i] = (Celula*) malloc(100 * sizeof(Celula));
       //percorre o vetor de Celulas atual, determinando caracteristicas de cada uma
-      for (int j = 0; j < tamanho; j++) {
+      for (int j = 0; j < 100; j++) {
         celulas[i][j].x = i;
         celulas[i][j].y = j;
-        celulas[i][j].terreno = TERRA;
-        celulas[i][j].cristais = 2;
-
-        if (i%2 == 0)
-        celulas[i][j].ocupado = 0;
-        else celulas[i][j].ocupado = 1;
+        celulas[i][j].ocupado = 0; //ocupado = 0 significa sem ocupacao
+        celulas[i][j].base = -1; //base = -1 significa sem base; base = 0 time = 0; base = 1 time = 1
       }
   }
-  /////////////////////
-  Maquina *registros[quantos_jogadores];
 
+  for (int i = 0; i < 20; i++) {
+    for (int j = 0; j < 20; j++) {
+      celulas[i][j].terreno = 1;
+      celulas[i][20+j].terreno = 3;
+      celulas[i][40+j].terreno = 4;
+      celulas[i][60+j].terreno = 1;
+      celulas[i][80+j].terreno = 1;
+
+      celulas[20+i][j].terreno = 3;
+      celulas[20+i][20+j].terreno = 3;
+      celulas[20+i][40+j].terreno = 1;
+      celulas[20+i][60+j].terreno = 2;
+      celulas[20+i][80+j].terreno = 1;
+
+      celulas[40+i][j].terreno = 4;
+      celulas[40+i][20+j].terreno = 1;
+      celulas[40+i][40+j].terreno = 2;
+      celulas[40+i][60+j].terreno = 1;
+      celulas[40+i][80+j].terreno = 4;
+
+      celulas[60+i][j].terreno = 1;
+      celulas[60+i][20+j].terreno = 2;
+      celulas[60+i][40+j].terreno = 1;
+      celulas[60+i][60+j].terreno = 3;
+      celulas[60+i][80+j].terreno = 3;
+
+      celulas[80+i][j].terreno = 1;
+      celulas[80+i][20+j].terreno = 1;
+      celulas[80+i][40+j].terreno = 4;
+      celulas[80+i][60+j].terreno = 3;
+      celulas[80+i][80+j].terreno = 1;
+    }
+  }
+
+  //cria 200 cristais
+  srand(time(NULL));
+  for (int i = 0; i < 200; i++) {
+      int num1 = rand() % 99;
+      int num2 = rand() % 99;
+
+      //se a celula ja tiver cristais, so adiciona mais
+      switch (celulas[num1][num2].terreno) {
+        case 0:
+          celulas[num1][num2].cristais += 1;
+          break;
+        case 1:
+          celulas[num1][num2].cristais += 2;
+          break;
+        case 2:
+          celulas[num1][num2].cristais += 5;
+          break;
+        case 3:
+          celulas[num1][num2].cristais += 4;
+          break;
+        case 4:
+          celulas[num1][num2].cristais += 3;
+          break;
+      }
+  }
   return a;
 }
 
@@ -55,7 +107,7 @@ Arena *cria_arena(int tamanho, int quantos_jogadores) {
 
 void RegistroMaquina(Arena *a, Maquina *m) {
   //coloca o endereco da maquina virtual recebida no vetor de registros
-  registros[topo_reg++] = *m;
+    registros[topo_reg++] = m;
 }
 
 //insere o novo exercito e cria uma base para ele
@@ -65,27 +117,31 @@ void InsereExercito(Arena *a) {
 
   //define o local *aleatorio* da base
   srand(time(NULL));
-  exercitos[topo_ex].pos_celula_base[0] = rand() % 97; //x
-  exercitos[topo_ex].pos_celula_base[1] = rand() % 97; //y
+  int x = rand() % 96;
+  int y = rand() % 96;
+  exercitos[topo_ex].pos_celula_base[0] = x;
+  exercitos[topo_ex].pos_celula_base[1] = y;
 
   //registra na celula o numero do exercito que tem base ali
-  celulas[exercitos[topo_ex].pos_celula_base[0]][exercitos[topo_ex].pos_celula_base[1]].base = topo_ex;
+  //celulas[x][y].base = topo_ex;
 
-  //os robos do exercito devem estar em posicoes especificas do vetor de registros:
-  //assim o endereco de cada um tambem e' colocado no vetor de robos do exercito
+  //a posicao dos robos do exercito no vetor de registros
+  //e' colocado no vetor de robos do exercito
   for (int i = 0; i < 3; i++) {
-    exercitos[topo_ex].robos[i] = registros[(topo_ex*3) + i];
+    exercitos[topo_ex].robos[i] = (topo_ex*3) + i;
+    //coloca em cada robo o numero do seu proprio exercito e do registro na arena
+    registros[exercitos[topo_ex].robos[i]]->exercito = topo_ex;
+    registros[exercitos[topo_ex].robos[i]]->registro = i;
 
     //coloca na maquina qual a posicao dela na arena
-    exercitos[topo_ex].robos[i]->pos[0] = exercitos[topo_ex].pos_celula_base[0]+i+1;
-    exercitos[topo_ex].robos[i]->pos[1] = exercitos[topo_ex].pos_celula_base[1];
+    registros[exercitos[topo_ex].robos[i]]->pos[0] = exercitos[topo_ex].pos_celula_base[0]+i+1;
+    registros[exercitos[topo_ex].robos[i]]->pos[1] = exercitos[topo_ex].pos_celula_base[1];
 
     //ativa ocupacao da celula
-    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
+    //celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
 
-    //NAO IMPLEMENTADO AINDA
     //coloca na celula a info da maquina que esta ocupando o local
-    //celulas[pos_celula_base[0]+i+1][pos_celula_base[1]].maquina_no_local = exercitos[topo_ex].robos[i];
+    //celulas[pos_celula_base[0]+i+1][pos_celula_base[1]].maquina_no_local = i;
   }
   topo_ex++;
 }
@@ -94,17 +150,75 @@ void RemoveExercito(Arena *a, int num_ex) {
   //desativa exercito
   exercitos[num_ex].ativo = 0;
 
-  for (int i = 0; i < 3; i++)
+  //for (int i = 0; i < 3; i++)
     //retira a ocupacao das celulas onde os robos do exercito estavam
-    celulas[exercitos[num_ex].robos[i]->pos[0]][exercitos[num_ex].robos[i]->pos[1]].ocupado = 0;
+    //celulas[registros[exercitos[num_ex].robos[i]]->pos[0]][registros[exercitos[num_ex].robos[i]]->pos[1]].ocupado = 0;
 
     //retira a base
-    celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = 0;
+    //celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = 0;
+}
+
+
+
+void Atualiza(Arena *a, int quant_rod) {
+  while (tempo < quant_rod) {
+    if (verifica_continuidade(a) == 0) break;
+    for (int i = 0; i < topo_reg; i++) //cada robo executa 50 instrucoes por rodada
+      exec_maquina(registros[i], 50);
+    tempo++; //quantas rodadas ja foram
+  }
+}
+
+//Verifica se existe pelo menos 1 robo de 1 exercito vivo
+int verifica_exercito_ativo(Arena *a, Exercito exercito) {
+  int cont = 0;
+  //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0
+  for (int i = 0; i < 3; i++)
+    if (registros[exercito.robos[i]]->energia > 0) cont++;
+
+  //caso haja 1 robo vivo, return 1 = "ativo"
+  if (cont > 0) return 1;
+  //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo"
+  else return 0;
 }
 
 void destroi_arena(Arena *a) {
+  free(celulas);
   free(a);
 }
+
+//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
+int verifica_exercito_ativo(Arena *a, Exercito exerc){
+  int i;
+  for(i = 0; i < 3; i++){                         //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
+    if(exerc->robos[i].energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
+  }
+  return 0;                                       //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
+}
+
+int verifica_continuidade(Arena *a, int max_rod){
+    if (a->tempo > max_rod) return 0;                                       //não continua se excedeu o numero maximo de rodadas.
+    int i;
+    int cont = 0;
+    for(i = 0; i < topo_ex; i++){
+        a->exercitos[i]->ativo = verifica_exercito_ativo(a, exercitos[i]); //verificar se existem exercitos ativos.
+        if (a->exercitos[i]->ativo == 1) cont++;
+        if (cont > 1) return 1;                                             //se há pelo menos dois exercitos ativos, continua
+    }
+    return 0;
+}
+
+
+void escalonador(Arena *a, int quant_rod){
+    int i;
+    for(i = 0; i < quant_rod; i++){
+        for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
+          exec_maquina(a->registros[i], 50);
+          Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
+        }
+    }
+}
+
 
 /*===============================================*/
 
@@ -170,13 +284,10 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 
 #define x (m->pos[0])
 #define y (m->pos[1])
-#define base_robo (m->base)
-#define base_inimiga ();
 
-int Sistema( OPERANDO op, Maquina *m){
+int Sistema(OPERANDO op, Maquina *m){
   int dir = op.valor;
   switch (op.t){
-
     case MOV:
        switch(dir){
         case aqui: //é a operacao de descanso, que recarrega um pouco de energia
@@ -252,7 +363,6 @@ int Sistema( OPERANDO op, Maquina *m){
           break;
       }
       break;
-
 
     case EXTR:
       switch(dir){
@@ -387,10 +497,14 @@ int Sistema( OPERANDO op, Maquina *m){
     case ATK:
        switch(dir){
         case aqui:
-          return 0; //não faz sentido atacar a si mesmo
+          if(m->energia >= 30){
+            m->energia -= 30 + 130;
+            return 1;
+          }
+          return 0; //sem energia suficiente
           break;
         case norte:
-          if (celula_existe(x-1, y) == 1 && m->energia >= 30){
+          if (celula_existe(x-1, y) == 1 && m->energia >= 30
             if(a->celulas[x-1][y]->ocupado == 1){
               a->celulas->[x-1][y]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
               m->energia -= 30;//perde energia por atacar com sucesso
@@ -477,38 +591,4 @@ int Sistema( OPERANDO op, Maquina *m){
       break;
   }
 }
-//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
-int verifica_exercito_ativo(Arena *a, Exercito exerc){
-  int i;
-  int cont = 0;
-  for(i = 0; i < 3; i++){                         //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
-    if(exerc->robos[i].energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
-  }
-  return 0;                                       //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
-}
 
-int verifica_continuidade(Arena *a, int max_rod){
-    if (a->tempo > max_rod) return 0;                                       //não continua se excedeu o numero maximo de rodadas.
-    int i;
-    int cont = 0;
-    for(i = 0; i < topo_ex; i++){
-        a->exercitos[i]-> ativo = verifica_exercito_ativo(a, exercitos[i]); //verificar se existem exercitos ativos.
-        if (a->exercitos[i]->ativo == 1) cont++;
-        if (cont > 1) return 1;                                             //se há pelo menos dois exercitos ativos, continua
-    }
-    return 0;
-}
-
-void RegistroMaquina(Arena *a, Maquina *m){
-	a->registros[a->topo_reg++] = m;
-}
-
-void escalonador(Arena *a, int quant_rod){
-    int i;
-    for(i = 0; i < quant_rod; i++){
-        for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
-          exec_maquina(a->registros[i], 50);
-          Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
-        }
-    }
-}
