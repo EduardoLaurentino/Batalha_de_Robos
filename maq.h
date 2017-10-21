@@ -3,8 +3,8 @@
 #define MAXMEM 100
 
 typedef struct {
-  Pilha pil;
-  Pilha exec;
+  Pilha* pil;
+  Pilha* exec;
   OPERANDO Mem[MAXMEM];
   INSTR *prog;
   OPERANDO ip;

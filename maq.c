@@ -52,10 +52,12 @@ Maquina *cria_maquina(INSTR *p) {
   Maquina *m = (Maquina*)malloc(sizeof(Maquina));
   if (!m) Fatal("Memória insuficiente",4);
 
-  m->ip.val.n = 0;
-  m->rbp.val.n = 0; //novo registrador
+  m->ip.valor = 0;
+  m->rbp.valor = 0; //novo registrador
   m->prog = p;
   m->energia = 1000;
+  m->exec = cria_pilha();
+  m->pil = cria_pilha();
   return m;
 }
 
@@ -66,8 +68,8 @@ void destroi_maquina(Maquina *m) {
 /* Alguns macros para facilitar a leitura do código */
 #define ip (m->ip)
 #define rbp (m->rbp) //novo registrador
-#define pil (&m->pil)
-#define exec (&m->exec)
+#define pil (m->pil)
+#define exec (m->exec)
 #define prg (m->prog)
 #define topo (exec->topo) // topo da pilha de execução
 
@@ -75,8 +77,8 @@ void exec_maquina(Maquina *m, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
-    OpCode   opc = prg[ip.val.n].instr;
-    OPERANDO arg = prg[ip.val.n].op;
+    OpCode   opc = prg[ip].instr;
+    OPERANDO arg = prg[ip].op;
 
     OPERANDO tmp;
     OPERANDO op1;
@@ -157,10 +159,11 @@ void exec_maquina(Maquina *m, int n) {
   case CALL:
     empilha(exec, ip);
     empilha(exec, rbp);
+    rbp = (exec->topo);
     ip = arg;
-    rbp.val.n = topo;
     continue;
   case RET:
+    topo = rbp.val.n;
     rbp = desempilha(exec);
     ip = desempilha(exec);
     break;
@@ -233,10 +236,10 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case STO:
-    m->Mem[arg.val.n] = desempilha(pil);
+    m->Mem[arg] = desempilha(pil);
     break;
   case RCL:
-    empilha(pil,m->Mem[arg.val.n]);
+    empilha(pil,m->Mem[arg]);
     break;
   case END:
     return;
@@ -247,21 +250,21 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case STL:
-      exec->val[arg.val.n + rbp.val.n - 1] = desempilha(pil);
-      break;
+      exec->val[arg.val.n + rbp.val.n - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava 
+      break;                                                  //da memoria. Agora desempilha da exec.
     case RCE:
-      empilha(pil, exec->val[arg.val.n + rbp.val.n - 1]);
-      break;
+      empilha(pil, exec->val[arg.val.n + rbp.val.n - 1]);    //Corrigido o erro em que RCE empilhava 
+      break;                                                 //na memoria. Agora empilha na exec.
 
   case ALC:
-    topo = topo + arg.val.n;
+    topo = topo + arg.val.n; //Aloca "arg" espaços na exec. (Implementado na Fase2)
     break;
   case FRE:
-    for(i = 0; i < arg.val.n; i++)
-      desempilha(exec);
+    topo = topo - arg.val.n; //Desaloca "arg" espaços na exec. (Implementado na Fase2)
     break;
 
-  //case ATR:
+  case ATR: 
+    break;
 
   case SIS:
     empilha(pil, Sistema(op.t, m));
@@ -272,6 +275,6 @@ void exec_maquina(Maquina *m, int n) {
   D(imprime(pil,5));
   D(puts("\n"));
 
-  ip.val.n++;
+  ip++;
   }
 }

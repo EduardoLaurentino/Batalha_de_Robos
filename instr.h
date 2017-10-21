@@ -26,8 +26,8 @@ typedef enum {
   PRN,
   STL,
   RCE,
-  FRE,
   ALC,
+  FRE,
   ATR,
   SIS, //chamada ao sistema (mov, extrair, depositar e atk)
 } OpCode;
@@ -49,7 +49,7 @@ typedef struct {
   short int cristais;
   short int ocupado;
   short int base;
-  Maquina* m = maquina_na_celula;
+  Maquina* maquina_na_celula;
 } Celula;
 
 /* Tipos dos operandos */
