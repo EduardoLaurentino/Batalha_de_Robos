@@ -31,6 +31,25 @@ int verifica_continuidade(void); //"int" para usarmos retornos 0 ou 1, simulando
 
 void escalonador(Arena *a, int quant_rod);
 
-
 void destroi_arena(Arena *a);
+
+int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
+
+int verifica_ocupacao(int x, int y);
+
+int celula_existe(int x, int y);
+
+int retira_energia_movimento(Maquina *m, Terreno terreno);
+
+int retira_energia_extracao_e_por(Maquina *m, Terreno terreno);
+
+int movimentacao(Maquina *m, int i, int j);
+
+int extracao(Maquina *m, int i, int j);
+
+int poe_cristal(Maquina *m, int i, int j);
+
+int atacar(Maquina *m, int i, int j);
+
+int Sistema(OPERANDO op, Maquina *m);
 

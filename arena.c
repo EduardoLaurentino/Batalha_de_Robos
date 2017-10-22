@@ -121,11 +121,10 @@ void InsereExercito(Arena *a) {
   int x;
   int y;
   int ok = 0;
-  
+
   while (ok == 0) {
     x = rand() % 96;
     y = rand() % 96;
-    printf("%d %d ", x, y);
     if (celulas[x][y].base == -1) ok = 1;
   }
   exercitos[topo_ex].pos_celula_base[0] = x;
@@ -150,7 +149,7 @@ void InsereExercito(Arena *a) {
     celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
 
     //coloca na celula a info da maquina que esta ocupando o local
-    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = i;
+    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = (topo_ex*3) + i;
   }
   topo_ex++;
 }
@@ -328,7 +327,7 @@ int extracao(Maquina *m, int i, int j){
   else return 0;
 }
 
-int poe_cristal(Maquina *m, int i, int j){
+int por_cristal(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
     celulas[i][j].cristais += 1;
     m->cristais -= 1;
@@ -418,5 +417,3 @@ int Sistema(OPERANDO op, Maquina *m){
       else if (dir == noroeste) return atacar(m, x-1, y-1);
   }
 }
-
-
