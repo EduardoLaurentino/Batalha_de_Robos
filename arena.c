@@ -167,43 +167,30 @@ void RemoveExercito(Arena *a, int num_ex) {
     celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = -1;
 }
 
-//Verifica se existe pelo menos 1 robo de 1 exercito vivo
-int verifica_exercito_ativo(Exercito exercito) {
-  int i, cont = 0;
-  //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0
-  for (i = 0; i < 3; i++)
-    if (registros[exercito.robos[i]]->energia > 0) cont++;
-
-  //caso haja 1 robo vivo, return 1 = "ativo"
-  if (cont > 0) return 1;
-  //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo"
-  else return 0;
-}
-
 void destroi_arena(Arena *a) {
   free(celulas);
   free(a);
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo:
-/*int verifica_exercito_ativo(Exercito exerc){
+int verifica_exercito_ativo(Exercito exerc){
   int XcoordBaseExerc = exerc.pos_celula_base[0]; // coordenada X da base do exercito em questao
   int YcoordBaseExerc = exerc.pos_celula_base[1]; // coordenada Y da base do exercito em questao
   if(celulas[XcoordBaseExerc][YcoordBaseExerc].cristais >= 5) return 0; //Se a base do exercito em questao tiver 5 cristais, jogo acaba
   int i;
   int cont;
-  for(i = 0; i < 3; i++){                     //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
-    if(exerc.robos[i]->energia > 0){
+  for(i = 0; i < 3; i++){                    //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
+    if(registros[exerc.robos[i]]->energia > 0){
       cont = 1;
     }else{
-      celulas[registros[exerc.robo[i].pos[0]][registros[exerc.robo[i].pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
+      celulas[registros[exerc.robos[i]]->pos[0]][registros[exerc.robos[i]]->pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
     }
   }
   if(cont == 1) return 1;                     //caso haja 1 robo vivo, return 1 = "ativo";
   else return 0;                              //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
 }
 
-int verifica_continuidade(void){                                      //não continua se excedeu o numero maximo de rodadas.
+int verifica_continuidade(){                                      //não continua se excedeu o numero maximo de rodadas.
     int i;
     int quant = 0;
     int exerc_vencedor = -1;
@@ -218,19 +205,19 @@ int verifica_continuidade(void){                                      //não con
 
 void escalonador(Arena *a, int quant_rod){
     int i;
-    int verifica_continuidade;
+    int verifica_cont;
     for(i = 0; i < quant_rod; i++){
-      verifica_continuidade = verifica_continuidade(); //funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
-      if(verifica_continuidade < 0){ 
+      verifica_cont = verifica_continuidade(); //funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
+      if(verifica_cont < 0){ 
         for(i = 0; i < topo_reg; i++){ //faz todas os robos executarem 50 instruções
           exec_maquina(registros[i], 50);
         }
       }else{
-        printf("Vencedor: Exército %d\n",verifica_continuidade); //Printa o exercito vencedor.
+        printf("Vencedor: Exército %d\n",verifica_cont); //Printa o exercito vencedor.
         break;                                                   //Jogo acaba.
       }
     }
-}*/
+}
 
 
 /*===============================================*/
@@ -333,8 +320,9 @@ int por_cristal(Maquina *m, int i, int j){
     celulas[i][j].cristais += 1;
     m->cristais -= 1;
     m->energia -= 20;
-  }
-  else return 0;
+  }else{
+    return 0;
+  } 
 }
 
 int atacar(Maquina *m, int i, int j){
