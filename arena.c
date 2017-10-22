@@ -13,6 +13,7 @@ static void Fatal(char *msg, int cod) {
 
 Arena *a;
 Arena *cria_arena() {
+  int i, j;
   Arena *a = (Arena*)malloc(sizeof(Arena));
   if (!a) Fatal("Memória insuficiente",4);
 
@@ -23,11 +24,11 @@ Arena *cria_arena() {
   //vetor de ponteiros
   a->celulas = (Celula**)malloc(100 * sizeof(Celula*));
   if (!a->celulas) Fatal("Memória insuficiente",4);
-  for (int i = 0; i < 100; i++){
+  for (i = 0; i < 100; i++){
     //aloca um vetor de Celulas para cada posição do vetor de ponteiros
     a->celulas[i] = (Celula*) malloc(100 * sizeof(Celula));
       //percorre o vetor de Celulas atual, determinando caracteristicas de cada uma
-      for (int j = 0; j < 100; j++) {
+      for (j = 0; j < 100; j++) {
         a->celulas[i][j].x = i;
         a->celulas[i][j].y = j;
         a->celulas[i][j].ocupado = 0; //ocupado = 0 significa sem ocupacao
@@ -35,8 +36,8 @@ Arena *cria_arena() {
       }
   }
 
-  for (int i = 0; i < 20; i++) {
-    for (int j = 0; j < 20; j++) {
+  for (i = 0; i < 20; i++) {
+    for (j = 0; j < 20; j++) {
       a->celulas[i][j].terreno = 1;
       a->celulas[i][20+j].terreno = 3;
       a->celulas[i][40+j].terreno = 4;
@@ -71,7 +72,7 @@ Arena *cria_arena() {
 
   //cria 20 cristais
   srand(time(NULL));
-  for (int i = 0; i < 20; i++) {
+  for (i = 0; i < 20; i++) {
       int num1 = rand() % 99;
       int num2 = rand() % 99;
 
@@ -111,6 +112,7 @@ void RegistroMaquina(Arena *a, Maquina *m) {
 
 //insere o novo exercito e cria uma base para ele
 void InsereExercito(Arena *a) {
+  int i;
   //ativa exercito
   exercitos[topo_ex].ativo = 1;
 
@@ -126,7 +128,7 @@ void InsereExercito(Arena *a) {
 
   //a posicao dos robos do exercito no vetor de registros
   //e' colocado no vetor de robos do exercito
-  for (int i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++) {
     exercitos[topo_ex].robos[i] = (topo_ex*3) + i;
     //coloca em cada robo o numero do seu proprio exercito e do registro na arena
     registros[exercitos[topo_ex].robos[i]]->exercito = topo_ex;
@@ -146,10 +148,11 @@ void InsereExercito(Arena *a) {
 }
 
 void RemoveExercito(Arena *a, int num_ex) {
+  int i;
   //desativa exercito
   exercitos[num_ex].ativo = 0;
 
-  for (int i = 0; i < 3; i++)
+  for (i = 0; i < 3; i++)
     //retira a ocupacao das celulas onde os robos do exercito estavam
     celulas[registros[exercitos[num_ex].robos[i]]->pos[0]][registros[exercitos[num_ex].robos[i]]->pos[1]].ocupado = 0;
 
@@ -158,10 +161,10 @@ void RemoveExercito(Arena *a, int num_ex) {
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo
-int verifica_exercito_ativo(Arena *a, Exercito exercito) {
-  int cont = 0;
+int verifica_exercito_ativo(Exercito exercito) {
+  int i, cont = 0;
   //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0
-  for (int i = 0; i < 3; i++)
+  for (i = 0; i < 3; i++)
     if (registros[exercito.robos[i]]->energia > 0) cont++;
 
   //caso haja 1 robo vivo, return 1 = "ativo"
@@ -175,33 +178,33 @@ void destroi_arena(Arena *a) {
   free(a);
 }
 
-//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
+/*//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
 int verifica_exercito_ativo(Exercito exerc){
   int i;
   for(i = 0; i < 3; i++){                         //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
-    if(exerc->robos[i].energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
+    if(exerc.robos[i]->energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
   }
   return 0;                                       //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
-}
+}*/
 
-int verifica_continuidade(){                                      //não continua se excedeu o numero maximo de rodadas.
+int verifica_continuidade(void){                                      //não continua se excedeu o numero maximo de rodadas.
     int i;
     int cont = 0;
     for(i = 0; i < 2; i++){ //dois exercitos apenas
         exercitos[i].ativo = verifica_exercito_ativo(exercitos[i]); //verificar se existem exercitos ativos.
-        if (a->exercitos[i]->ativo == 1) cont++;
+        if (exercitos[i].ativo == 1) cont++;
         if (cont > 1) return 1;                                             //se há pelo menos dois exercitos ativos, continua
     }
     return 0;
 }
 
 
-void escalonador(Arena *a, int quant_rod){
+void escalonador(int quant_rod){
     int i;
     for(i = 0; i < quant_rod; i++){
       if(verifica_continuidade() == 1){
-        for(i = 0; i < a->topo_reg; i++){ //faz todas os robos executarem 50 instruções
-          exec_maquina(a->registros[i], 50);
+        for(i = 0; i < topo_reg; i++){ //faz todas os robos executarem 50 instruções
+          exec_maquina(registros[i], 50);
           //Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
         }
       }
@@ -213,7 +216,7 @@ void escalonador(Arena *a, int quant_rod){
 
 int verifica_ocupacao(int x, int y){ //verifica disponibilidade de conquista da célula (se existir)
   if (x < 0 || y < 0 || x >= 100 || y >= 100) return 1; //indisponibilidade ~= estar ocupado
-  else return a->celulas[x][y]->ocupado; //verificar sintáxe
+  else return celulas[x][y].ocupado; //verificar sintáxe
 }
 
 int celula_existe(int x, int y){
@@ -274,21 +277,29 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 #define x (m->pos[0])
 #define y (m->pos[1])
 
-int movimentacao(Maquina *m, int i int j){
-  if (verifica_ocupacao(a, i, j) == 0 && retira_energia_movimento(m, a->celulas[i][j]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-    a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
+#define aqui 0
+#define norte 1
+#define nordeste 2
+#define sudeste 3
+#define sul 3
+#define sudoeste 4
+#define noroeste 5
+
+int movimentacao(Maquina *m, int i, int j){
+  if (verifica_ocupacao(i, j) == 0 && retira_energia_movimento(m, celulas[i][j].terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+    celulas[x][y].ocupado = 0; //muda o status da celula onde tava para desocupada
     m->pos[0] = i;
     m->pos[1] = j; //atualiza posicao robo
-    a->celulas[x][y]->maquina_no_local = &m;
-    a->celulas[x][y]->ocupado = 1;
+    celulas[x][y].maquina_no_local = m->registro;
+    celulas[x][y].ocupado = 1;
     return 1;
   }
   else return 0;
 }
 
-int extracao(Maquina *m, int i int j){
-  if (verifica_ocupacao(a, i, j) == 0 && retira_energia_extracao_e_por(m, a->celulas[i][j]->terreno) == 1 && a->celulas[i][j]->cristais > 0 && m->cristais < 3){ //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais. não pode extrair se tiver mais de dois já
-    a->celulas[i][j]->cristais -= 1;
+int extracao(Maquina *m, int i, int j){
+  if (verifica_ocupacao(i, j) == 0 && retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1 && celulas[i][j].cristais > 0 && m->cristais < 3){ //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais. não pode extrair se tiver mais de dois já
+    celulas[i][j].cristais -= 1;
     m->cristais += 1;
     m->energia -= 20; //perda de energia maior por fazer extração em célula vizinha (fazer extração em céula vizinha ao invés de onde sestá tem custo energético maior);
     return 1;
@@ -297,8 +308,8 @@ int extracao(Maquina *m, int i int j){
 }
 
 int poe_cristal(Maquina *m, int i, int j){
-  if (verifica_ocupacao(a, i, j) == 0 && retira_energia_extracao_e_por(m, a->celulas[i][j]->terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
-    a->celulas[i][j]->cristais += 1;
+  if (verifica_ocupacao(i, j) == 0 && retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
+    celulas[i][j].cristais += 1;
     m->cristais -= 1;
     m->energia -= 20;
   }
@@ -307,8 +318,8 @@ int poe_cristal(Maquina *m, int i, int j){
 
 int atacar(Maquina *m, int i, int j){
   if (celula_existe(i, j) == 1 && m->energia >= 30){
-    if(a->celulas[i][j]->ocupado == 1){ //tem robo pra ser atacado
-      a->celulas->[i][j]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+    if(celulas[i][j].ocupado == 1){ //tem robo pra ser atacado
+      registros[celulas[i][j].maquina_no_local]->energia -= 130;//retura energia do robo atacado;tacado
       m->energia -= 30;//perde energia por atacar com sucesso
       return 1;
     }
@@ -320,131 +331,71 @@ int atacar(Maquina *m, int i, int j){
   else return 0;
 }
 
-
-
 int Sistema(OPERANDO op, Maquina *m){
   int dir = op.valor;
-  switch (op.t){
-    case MOV:
-       switch(dir){
-        case aqui: //é a operacao de descanso, que recarrega um pouco de energia
+
+  if (op.t == MOV){
+      if (dir == aqui){ //é a operacao de descanso, que recarrega um pouco de energia
           if (m->energia < 800) {m->energia += 10; return 1;} //aumenta a energia e retorna o sucesso do procedimento
           return 0; //se não conseguir aumentar energia (uma vez que ficou com menos de 1000, nao pode voltar a ter 1000;
-        break;
-        case norte:
-          return movimentacao(m, x-1, y);
-          break;
-        case nordeste:
-          return movimentacao(m, x-1, y+1);
-          break;
-        case sudeste:
-          return movimentacao(m, x, y+1);
-          break;
-        case sul:
-          return movimentacao(m, x+1, y);
-          break;
-        case sudoeste:
-          return movimentacao(m, x, y-1);
-          break;
-        case noroeste:
-          return movimentacao(m, x-1, y-1);
-          else return 0;
-          break;
       }
-    break;
+      else if (dir == norte)    return movimentacao(m, x-1, y);
+      else if (dir == nordeste) return movimentacao(m, x-1, y+1);
+      else if (dir == sudeste)  return movimentacao(m, x, y+1);
+      else if (dir == sul)      return movimentacao(m, x+1, y);
+      else if (dir == sudoeste) return movimentacao(m, x, y-1);
+      else if (dir == noroeste) return movimentacao(m, x-1, y-1);
+  }
 
-    case EXTR:
-      switch(dir){
-        case aqui:
-          if (retira_energia_extracao_e_por(m, a->celulas[x][y]->terreno) == 1 && a->celulas[x][y]->cristais > 0) { //só de tentar extrair já perde energia, mas só vai conseguir se tiver cristais disponiveis
-            a->celulas[x][y]->cristais -= 1;
-            m->cristais += 1;
-            return 1;
-          }
-          else return 0;
-          break;
-        case norte:
-          return extracao(m, x-1, y);
-          break;
-        case nordeste:
-          return extracao(m, x-1, y+1);
-          break;
-        case sudeste:
-          return extracao(m, x, y+1);
-          break;
-        case sul:
-          return extracao(m, x+1, y);
-          break;
-        case sudoeste:
-          return extracao(m, x, y-1);
-          break;
-        case noroeste:
-          return extracao(m, x-1, y-1);
-          break;
-    break;
-
-
-    case POR:
-      switch(dir){
-        case aqui:
-          if (retira_energia_extracao_e_por(m, a->celulas[x][y]->terreno) == 1 && m->cristais > 0) { //verifica se tem cristais pra por e só coloca se tiver energia, mas perde energia só de tentar
-            a->celulas[x][y]->cristais += 1;
-            m->cristais -= 1;
-            return 1;
-          }
-          else return 0;
-          break;
-        case norte:
-          return por_cristal(m, x-1, y);
-          break;
-        case nordeste:
-          return por_cristal(m, x-1, y+1);
-          break;
-        case sudeste:
-          return por_cristal(m, x, y+1);
-          break;
-        case sul:
-          return por_cristal(m, x+1, y);
-          break;
-        case sudoeste:
-          return por_cristal(m, x, y-1);
-          break;
-        case noroeste:
-          return por_cristal(m, x-1, y-1);
-          break;
+  else if (op.t == EXTR){
+      if (dir == aqui){
+            if (retira_energia_extracao_e_por(m, celulas[x][y].terreno) == 1 && celulas[x][y].cristais > 0) { //só de tentar extrair já perde energia, mas só vai conseguir se tiver cristais disponiveis
+              celulas[x][y].cristais -= 1;
+              m->cristais += 1;
+              return 1;
+            }
+            else return 0;
       }
-    break;
+      else if (dir == norte)    return extracao(m, x-1, y);
+      else if (dir == nordeste) return extracao(m, x-1, y+1);
+      else if (dir == sudeste)  return extracao(m, x, y+1);
+      else if (dir == sul)      return extracao(m, x+1, y);
+      else if (dir == sudoeste) return extracao(m, x, y-1);
+      else if (dir == noroeste) return extracao(m, x-1, y-1);
+  }
 
-
-    case ATK:
-       switch(dir){
-        case aqui:
-          if(m->energia >= 30){
-            m->energia -= 30 + 130;
-            return 1;
-          }
-          return 0; //sem energia suficiente
-          break;
-        case norte:
-          return atacar(m, x-1, y);
-          break;
-        case nordeste:
-          return atacar(m, x-1, y+1);
-          break;
-        case sudeste:
-          return atacar(m, x, y+1);
-          break;
-        case sul:
-          return atacar(m, x+1, y);
-          break;
-        case sudoeste:
-          return atacar(m, x, y-1);
-          break;
-        case noroeste:
-          return atacar(m, x-1, y-1);
-          break;
+  else if (op.t == POR){
+      if (dir == aqui){
+            if (retira_energia_extracao_e_por(m, celulas[x][y].terreno) == 1 && m->cristais > 0) { //verifica se tem cristais pra por e só coloca se tiver energia, mas perde energia só de tentar
+              celulas[x][y].cristais += 1;
+              m->cristais -= 1;
+              return 1;
+            }
+            else return 0;
       }
-      break;
+      else if (dir == norte)    return por_cristal(m, x-1, y);
+      else if (dir == nordeste) return por_cristal(m, x-1, y+1);
+      else if (dir == sudeste)  return por_cristal(m, x, y+1);
+      else if (dir == sul)      return por_cristal(m, x+1, y);
+      else if (dir == sudoeste) return por_cristal(m, x, y-1);
+      else if (dir == noroeste) return por_cristal(m, x-1, y-1);
+  }
+
+  else if (op.t == ATK){
+       if (dir == aqui){
+            if(m->energia >= 30){
+              m->energia -= 30 + 130;
+              return 1;
+            }
+            return 0; //sem energia suficiente
+       }
+      else if (dir == norte)    return atacar(m, x-1, y);
+      else if (dir == nordeste) return atacar(m, x-1, y+1);
+      else if (dir == sudeste)  return atacar(m, x, y+1);
+      else if (dir == sul)      return atacar(m, x+1, y);
+      else if (dir == sudoeste) return atacar(m, x, y-1);
+      else if (dir == noroeste) return atacar(m, x-1, y-1);
   }
 }
+
 

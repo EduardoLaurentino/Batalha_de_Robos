@@ -11,6 +11,7 @@ typedef struct {
   OPERANDO rbp;
   int cristais;
   int pos[2]; //pos[0] = coordenada x na matriz; pos[1] = coordenada y na matriz;
+  int registro; //guarda a posição no vetor de registro da arena
   int energia; //começará com 1000 pontos de energia
   int exercito;
   //int registro; //numero de registro na arena

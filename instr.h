@@ -38,6 +38,10 @@ typedef enum {
   ACAO,
   VAR,
   CELULA,
+  MOV,
+  EXTR,
+  POR,
+  ATK,
 } Tipo;
 
 /* Tipo de terreno */
@@ -57,7 +61,7 @@ typedef struct {
   int base;
   int x;
   int y;
-  int maquina_no_local; //posicao da maquina no vetor de registros
+  int maquina_no_local; //posicao da maquina no vetor de registros // o mesmo que o atributo "registro" da maquina
 } Celula;
 
 /* Operando */

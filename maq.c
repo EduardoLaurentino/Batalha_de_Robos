@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "maq.h"
+//#include "maq.h"
+#include "arena.c"
 
 /* #define DEBUG */
 
@@ -31,8 +32,8 @@ char *CODES[] = {
   "PRN",
   "STL",
   "RCE",
-  //"ATR",
-  //"SIS",
+  "ATR",
+  "SIS",
 };
 
 #else
@@ -252,7 +253,7 @@ void exec_maquina(Maquina *m, int n) {
   case STL:
       exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava
       break;                                                  //da memoria. Agora desempilha da exec.
-    case RCE:
+  case RCE:
       empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o erro em que RCE empilhava
       break;                                                 //na memoria. Agora empilha na exec.
 
@@ -264,18 +265,14 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case ATR:
-    tmp.t = arg.t;
-     = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados.
+    tmp = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados.
     int value = arg.valor; //0 = terreno, 1 = cristais, 2 = ocupado, 3 = base; eh dado no arg.valor
     empilha(pil, tmp) ; //empilha na pilha de dados o atributo "arg.valor" da celula que foi desempilhada.
     break;
 
-  /*@Lais @Laurent:
-  Nao sei se ta certo o SIS \/, fui tentando ajudar por causa de erro de compilação.
-  Fiquem a vontade para mudar*/
   case SIS:
     tmp.t = arg.t;
-    tmp.valor = Sistema(arg.t, m);
+    tmp.valor = Sistema(arg, m);
     empilha(pil, tmp);
     break;
   }

@@ -23,15 +23,13 @@ void RegistroMaquina(Arena *a, Maquina *m);
 void InsereExercito(Arena *a);
 void RemoveExercito(Arena *a, int num_ex);
 
-void Atualiza(Arena *a, int rodadas);
 int Sistema(OPERANDO op, Maquina *m);
 
+int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
 
-int verifica_exercito_ativo(Arena *a, Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
+int verifica_continuidade(void); //"int" para usarmos retornos 0 ou 1, simulando booleana
 
-int verifica_continuidade(Arena *a); //"int" para usarmos retornos 0 ou 1, simulando booleana
-
-void escalonador(Arena *a, int quant_rod);
+void escalonador(int quant_rod);
 
 
 void destroi_arena(Arena *a);
