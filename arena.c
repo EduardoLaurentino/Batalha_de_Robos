@@ -121,7 +121,7 @@ void InsereExercito(Arena *a) {
   int x;
   int y;
   int ok = 0;
-  
+
   while (ok == 0) {
     x = rand() % 96;
     y = rand() % 96;
@@ -211,7 +211,7 @@ void escalonador(Arena *a, int quant_rod){
     for(i = 0; i < quant_rod; i++){
       if(verifica_continuidade() == 1){
         for(i = 0; i < topo_reg; i++){ //faz todas os robos executarem 50 instruções
-          exec_maquina(registros[i], 10);
+          exec_maquina(registros[i], 50);
           //Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
         }
       }
@@ -288,9 +288,9 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 #define norte 1
 #define nordeste 2
 #define sudeste 3
-#define sul 4
-#define sudoeste 5
-#define noroeste 6
+#define sul 3
+#define sudoeste 4
+#define noroeste 5
 
 int movimentacao(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_movimento(m, celulas[i][j].terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
@@ -352,7 +352,6 @@ int Sistema(OPERANDO op, Maquina *m){
       else if (dir == sul)      return movimentacao(m, x+1, y);
       else if (dir == sudoeste) return movimentacao(m, x, y-1);
       else if (dir == noroeste) return movimentacao(m, x-1, y-1);
-      else return 0; //erro
   }
 
   else if (op.t == EXTR){
@@ -370,7 +369,6 @@ int Sistema(OPERANDO op, Maquina *m){
       else if (dir == sul)      return extracao(m, x+1, y);
       else if (dir == sudoeste) return extracao(m, x, y-1);
       else if (dir == noroeste) return extracao(m, x-1, y-1);
-      else return 0; //erro
   }
 
   else if (op.t == POR){
@@ -382,13 +380,12 @@ int Sistema(OPERANDO op, Maquina *m){
             }
             else return 0;
       }
-      else if (dir == norte)    return poe_cristal(m, x-1, y);
-      else if (dir == nordeste) return poe_cristal(m, x-1, y+1);
-      else if (dir == sudeste)  return poe_cristal(m, x, y+1);
-      else if (dir == sul)      return poe_cristal(m, x+1, y);
-      else if (dir == sudoeste) return poe_cristal(m, x, y-1);
-      else if (dir == noroeste) return poe_cristal(m, x-1, y-1);
-      else return 0; //erro
+      else if (dir == norte)    return por_cristal(m, x-1, y);
+      else if (dir == nordeste) return por_cristal(m, x-1, y+1);
+      else if (dir == sudeste)  return por_cristal(m, x, y+1);
+      else if (dir == sul)      return por_cristal(m, x+1, y);
+      else if (dir == sudoeste) return por_cristal(m, x, y-1);
+      else if (dir == noroeste) return por_cristal(m, x-1, y-1);
   }
 
   else if (op.t == ATK){
@@ -405,8 +402,5 @@ int Sistema(OPERANDO op, Maquina *m){
       else if (dir == sul)      return atacar(m, x+1, y);
       else if (dir == sudoeste) return atacar(m, x, y-1);
       else if (dir == noroeste) return atacar(m, x-1, y-1);
-      else return 0; //erro
   }
 }
-
-

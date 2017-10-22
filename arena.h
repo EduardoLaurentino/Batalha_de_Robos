@@ -23,9 +23,17 @@ void RegistroMaquina(Arena *a, Maquina *m);
 void InsereExercito(Arena *a);
 void RemoveExercito(Arena *a, int num_ex);
 
+int Sistema(OPERANDO op, Maquina *m);
+
 int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
 
 int verifica_continuidade(void); //"int" para usarmos retornos 0 ou 1, simulando booleana
+
+void escalonador(Arena *a, int quant_rod);
+
+void destroi_arena(Arena *a);
+
+int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
 
 int verifica_ocupacao(int x, int y);
 
@@ -44,8 +52,4 @@ int poe_cristal(Maquina *m, int i, int j);
 int atacar(Maquina *m, int i, int j);
 
 int Sistema(OPERANDO op, Maquina *m);
-
-void escalonador(int quant_rod);
-
-void destroi_arena(Arena *a);
 

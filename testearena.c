@@ -110,14 +110,14 @@ int main(int ac, char **av) {
   Arena *a = cria_arena();
 
   testes_arena(a);
-  
+
   //jogador 1 com 3 robos no exercito
   Maquina *maq0 = cria_maquina(programa);
   RegistroMaquina(a, maq0);
 
   Maquina *maq1 = cria_maquina(programa);
   RegistroMaquina(a, maq1);
-  
+
   Maquina *maq2 = cria_maquina(programa);
   RegistroMaquina(a, maq2);
 
@@ -126,10 +126,10 @@ int main(int ac, char **av) {
   //jogador 2 com 3 robos no exercito
   Maquina *maq3 = cria_maquina(programa);
   RegistroMaquina(a, maq3);
-  
+
   Maquina *maq4 = cria_maquina(programa);
   RegistroMaquina(a, maq4);
-  
+
   Maquina *maq5 = cria_maquina(programa);
   RegistroMaquina(a, maq5);
 
