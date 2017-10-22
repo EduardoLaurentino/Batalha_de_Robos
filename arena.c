@@ -274,84 +274,84 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 #define x (m->pos[0])
 #define y (m->pos[1])
 
+int movimentacao(Maquina *m, int i int j){
+  if (verifica_ocupacao(a, i, j) == 0 && retira_energia_movimento(m, a->celulas[i][j]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
+    a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
+    m->pos[0] = i;
+    m->pos[1] = j; //atualiza posicao robo
+    a->celulas[x][y]->maquina_no_local = &m;
+    a->celulas[x][y]->ocupado = 1;
+    return 1;
+  }
+  else return 0;
+}
+
+int extracao(Maquina *m, int i int j){
+  if (verifica_ocupacao(a, i, j) == 0 && retira_energia_extracao_e_por(m, a->celulas[i][j]->terreno) == 1 && a->celulas[i][j]->cristais > 0 && m->cristais < 3){ //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais. não pode extrair se tiver mais de dois já
+    a->celulas[i][j]->cristais -= 1;
+    m->cristais += 1;
+    m->energia -= 20; //perda de energia maior por fazer extração em célula vizinha (fazer extração em céula vizinha ao invés de onde sestá tem custo energético maior);
+    return 1;
+  }
+  else return 0;
+}
+
+int poe_cristal(Maquina *m, int i, int j){
+  if (verifica_ocupacao(a, i, j) == 0 && retira_energia_extracao_e_por(m, a->celulas[i][j]->terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
+    a->celulas[i][j]->cristais += 1;
+    m->cristais -= 1;
+    m->energia -= 20;
+  }
+  else return 0;
+}
+
+int atacar(Maquina *m, int i, int j){
+  if (celula_existe(i, j) == 1 && m->energia >= 30){
+    if(a->celulas[i][j]->ocupado == 1){ //tem robo pra ser atacado
+      a->celulas->[i][j]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
+      m->energia -= 30;//perde energia por atacar com sucesso
+      return 1;
+    }
+    else{
+      m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+      return 0; //não atacou
+    }
+  }
+  else return 0;
+}
+
+
+
 int Sistema(OPERANDO op, Maquina *m){
   int dir = op.valor;
   switch (op.t){
     case MOV:
        switch(dir){
         case aqui: //é a operacao de descanso, que recarrega um pouco de energia
-          if (m->energia < 900) {m->energia += 10; return 1;} //aumenta a energia e retorna o sucesso do procedimento
-          return 0; //se não conseguir aumentar energia,
+          if (m->energia < 800) {m->energia += 10; return 1;} //aumenta a energia e retorna o sucesso do procedimento
+          return 0; //se não conseguir aumentar energia (uma vez que ficou com menos de 1000, nao pode voltar a ter 1000;
         break;
-
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_movimento(m, a->celulas[x-1][y]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-            a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
-            m->pos[0] = x - 1;
-            m->pos[1] = y; //atualiza posicao robo
-            a->celulas[x][y]->maquina_no_local = &m;
-            a->celulas[x][y]->ocupado = 1;
-            return 1;
-          }
-          else return 0;
+          return movimentacao(m, x-1, y);
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_movimento(m, a->celulas[x-1][y+1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-            a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
-            m->pos[0] = x - 1;
-            m->pos[1] = y + 1; //atualiza posicao robo
-            a->celulas[x][y]->maquina_no_local = &m;
-            a->celulas[x][y]->ocupado = 1;
-            return 1;
-          }
-          else return 0;
+          return movimentacao(m, x-1, y+1);
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_movimento(m, a->celulas[x][y+1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-            a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
-            m->pos[0] = x;
-            m->pos[1] = y + 1; //atualiza posicao robo
-            a->celulas[x][y]->maquina_no_local = &m;
-            a->celulas[x][y]->ocupado = 1;
-            return 1;
-          }
-          else return 0;
+          return movimentacao(m, x, y+1);
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_movimento(m, a->celulas[x+1][y]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-            a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
-            m->pos[0] = x + 1;
-            m->pos[1] = y; //atualiza posicao robo
-            a->celulas[x][y]->maquina_no_local = &m;
-            a->celulas[x][y]->ocupado = 1;
-            return 1;
-          }
-          else return 0;
+          return movimentacao(m, x+1, y);
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_movimento(m, a->celulas[x][y-1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-            a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
-            m->pos[0] = x;
-            m->pos[1] = y - 1; //atualiza posicao robo
-            a->celulas[x][y]->maquina_no_local = &m;
-            a->celulas[x][y]->ocupado = 1;
-            return 1;
-          }
-          else return 0;
+          return movimentacao(m, x, y-1);
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_movimento(m, a->celulas[x-1][y-1]->terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
-            a->celulas[x][y]->ocupado = 0; //muda o status da celula onde tava para desocupada
-            m->pos[0] = x - 1;
-            m->pos[1] = y - 1; //atualiza posicao robo
-            a->celulas[x][y]->maquina_no_local = &m;
-            a->celulas[x][y]->ocupado = 1;
-            return 1;
-          }
+          return movimentacao(m, x-1, y-1);
           else return 0;
           break;
       }
-      break;
+    break;
 
     case EXTR:
       switch(dir){
@@ -364,61 +364,24 @@ int Sistema(OPERANDO op, Maquina *m){
           else return 0;
           break;
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x - 1][y]->terreno) == 1 && a->celulas[x-1][y]->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia, se sim tenta extrair (e nisso ja perde energia) mas só consegue se tiver cristais
-            a->celulas[x-1][y]->cristais -= 1;
-            m->cristais += 1;
-            m->energia -= 20; //perda de energia maior por fazer extração em célula vizinha (fazer extração em céula vizinha ao invés de onde de está tem custo energético maior);
-            return 1;
-          }
-          else return 0;
+          return extracao(m, x-1, y);
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x - 1][y + 1]->terreno) == 1 && a->celulas[x-1][y+1]->cristais > 0) {
-            a->celulas[x-1][y+1]->cristais -= 1;
-            m->cristais += 1;
-            m->energia -= 20;
-            return 1;
-          }
-          else return 0;
+          return extracao(m, x-1, y+1);
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y+1]->terreno) == 1 && a->celulas[x][y+1]->cristais > 0) {
-            a->celulas[x][y+1]->cristais -= 1;
-            m->cristais += 1;
-            m->energia -= 20;
-            return 1;
-          }
-          else return 0;
+          return extracao(m, x, y+1);
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x+1][y]->terreno) == 1 && a->celulas[x + 1][y]->cristais > 0) {
-            a->celulas[x + 1][y]->cristais -= 1;
-            m->cristais += 1;
-            m->energia -= 20;
-            return 1;
-          }
-          else return 0;
+          return extracao(m, x+1, y);
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y-1]->terreno) == 1 && a->celulas[x][y-1]->cristais > 0) {
-            a->celulas[x][y-1]->cristais -= 1;
-            m->cristais += 1;
-            m->energia -= 20;
-            return 1;
-          }
-          else 0;
+          return extracao(m, x, y-1);
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x-1][y-1]->terreno) == 1 && a->celulas[x - 1][y - 1]->cristais > 0) {
-            a->celulas[x - 1][y - 1]->cristais -= 1;
-            m->cristais += 1;
-            m->energia -= 20;
-            return 1;
-          }
-          else return 0;
+          return extracao(m, x-1, y-1);
           break;
-      }
-      break;
+    break;
 
 
     case POR:
@@ -432,55 +395,25 @@ int Sistema(OPERANDO op, Maquina *m){
           else return 0;
           break;
         case norte:
-          if (verifica_ocupacao(a, x - 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x-1][y]->terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
-            a->celulas[x-1][y]->cristais += 1;
-            m->cristais -= 1;
-            m->energia -= 20;
-          }
-          else return 0;
+          return por_cristal(m, x-1, y);
           break;
         case nordeste:
-          if (verifica_ocupacao(a, x - 1, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x - 1][y + 1]->terreno) == 1 && m->cristais > 0) {
-            a->celulas[x-1][y+1]->cristais += 1;
-            m->cristais -= 1;
-            m->energia -= 20;
-          }
-          else return 0;
+          return por_cristal(m, x-1, y+1);
           break;
         case sudeste:
-          if (verifica_ocupacao(a, x, y + 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y+1]->terreno) == 1 && m->cristais > 0) {
-            a->celulas[x][y+1]->cristais += 1;
-            m->cristais -= 1;
-            m->energia -= 20;
-          }
-          else return 0;
+          return por_cristal(m, x, y+1);
           break;
         case sul:
-          if (verifica_ocupacao(a, x + 1, y) == 0 && retira_energia_extracao_e_por(m, a->celulas[x+1][y]->terreno) == 1 && m->cristais > 0) {
-            a->celulas[x + 1][y]->cristais += 1;
-            m->cristais -= 1;
-            m->energia -= 20;
-          }
-          else return 0;
+          return por_cristal(m, x+1, y);
           break;
         case sudoeste:
-          if (verifica_ocupacao(a, x, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x][y-1]->terreno) == 1 && m->cristais > 0) {
-            a->celulas[x][y-1]->cristais += 1;
-            m->cristais -= 1;
-            m->energia -= 20;
-          }
-          else return 0;
+          return por_cristal(m, x, y-1);
           break;
         case noroeste:
-          if (verifica_ocupacao(a, x - 1, y - 1) == 0 && retira_energia_extracao_e_por(m, a->celulas[x-1][y-1]->terreno) == 1 && m->cristais > 0) {
-            a->celulas[x - 1][y - 1]->cristais += 1;
-            m->cristais -= 1;
-            m->energia -= 20;
-          }
-          else return 0;
+          return por_cristal(m, x-1, y-1);
           break;
       }
-      break;
+    break;
 
 
     case ATK:
@@ -493,88 +426,22 @@ int Sistema(OPERANDO op, Maquina *m){
           return 0; //sem energia suficiente
           break;
         case norte:
-          if (celula_existe(x-1, y) == 1 && m->energia >= 30
-            if(a->celulas[x-1][y]->ocupado == 1){
-              a->celulas->[x-1][y]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
-              m->energia -= 30;//perde energia por atacar com sucesso
-              return 1;
-            }
-            else{
-              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
-              return 0; //não atacou
-            }
-          }
-          else return 0;
+          return atacar(m, x-1, y);
           break;
         case nordeste:
-          if (celula_existe(x-1, y+1) == 1 && m->energia >= 30){
-            if(a->celulas[x-1][y+1]->ocupado == 1){
-              a->celulas->[x-1][y+1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
-              m->energia -= 30;//perde energia por atacar com sucesso
-              return 1;
-            }
-            else{
-              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
-              return 0; //não atacou
-            }
-          }
-          else return 0;
+          return atacar(m, x-1, y+1);
           break;
         case sudeste:
-          if (celula_existe(x, y+1) == 1 && m->energia >= 30){
-            if(a->celulas[x][y+1]->ocupado == 1){
-              a->celulas->[x][y+1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
-              m->energia -= 30;//perde energia por atacar com sucesso
-              return 1;
-            }
-            else{
-              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
-              return 0; //não atacou
-            }
-          }
-          else return 0;
+          return atacar(m, x, y+1);
           break;
         case sul:
-          if (celula_existe(x+1, y) == 1 && m->energia >= 30){
-            if(a->celulas[x+1][y]->ocupado == 1){
-              a->celulas->[x+1][y]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
-              m->energia -= 30;//perde energia por atacar com sucesso
-              return 1;
-            }
-            else{
-              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
-              return 0; //não atacou
-            }
-          }
-          else return 0;
+          return atacar(m, x+1, y);
           break;
         case sudoeste:
-          if (celula_existe(x, y-1) == 1 && m->energia >= 30){
-            if(a->celulas[x][y-1]->ocupado == 1){
-              a->celulas->[x][y-1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
-              m->energia -= 30;//perde energia por atacar com sucesso
-              return 1;
-            }
-            else{
-              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
-              return 0; //não atacou
-            }
-          }
-          else return 0;
+          return atacar(m, x, y-1);
           break;
         case noroeste:
-          if (celula_existe(x-1, y-1) == 1 && m->energia >= 30){
-            if(a->celulas[x-1][y-1]->ocupado == 1){
-              a->celulas->[x-1][y-1]->maquina_no_local->energia -= 130;//retura energia do robo atacado;tacado
-              m->energia -= 30;//perde energia por atacar com sucesso
-              return 1;
-            }
-            else{
-              m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
-              return 0; //não atacou
-            }
-          }
-          else return 0;
+          return atacar(m, x-1, y-1);
           break;
       }
       break;
