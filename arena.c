@@ -125,7 +125,6 @@ void InsereExercito(Arena *a) {
   while (ok == 0) {
     x = rand() % 96;
     y = rand() % 96;
-    printf("%d %d ", x, y);
     if (celulas[x][y].base == -1) ok = 1;
   }
   exercitos[topo_ex].pos_celula_base[0] = x;
@@ -150,7 +149,7 @@ void InsereExercito(Arena *a) {
     celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
 
     //coloca na celula a info da maquina que esta ocupando o local
-    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = i;
+    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = (topo_ex*3) + i;
   }
   topo_ex++;
 }
