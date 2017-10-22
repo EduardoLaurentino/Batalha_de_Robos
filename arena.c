@@ -185,7 +185,7 @@ void destroi_arena(Arena *a) {
   free(a);
 }
 
-//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
+/*//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
 int verifica_exercito_ativo(Exercito exerc){
   int XcoordBaseExerc = exerc.pos_celula_base[0]; // coordenada X da base do exercito em questao
   int YcoordBaseExerc = exerc.pos_celula_base[1]; // coordenada Y da base do exercito em questao
@@ -214,9 +214,9 @@ int verifica_continuidade(void){                                      //não con
     if (quant == 2) return -1;                                       //se os dois exercitos estao ativos, o jogo continua(retorna -1)
     else return exerc_vencedor;                                     //caso haja apenas 1, retorna o numero do unico exercito ativo(vencedor)
 }
+*/
 
-
-void escalonador(Arena *a, int quant_rod){
+/*void escalonador(Arena *a, int quant_rod){
     int i;
     for(i = 0; i < quant_rod; i++){
       if(verifica_continuidade() < 0){ //funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
@@ -225,11 +225,11 @@ void escalonador(Arena *a, int quant_rod){
           //Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
         }
       }else{
-        printf("Vencedor: Exército %d\n",verifica_continuidade); //Printa o exercito vencedor.
+        //printf("Vencedor: Exército %d\n",verifica_continuidade); //Printa o exercito vencedor.
         break;                                                   //Jogo acaba.
       }
     }
-}
+}*/
 
 
 /*===============================================*/
