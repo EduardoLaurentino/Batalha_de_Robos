@@ -186,35 +186,48 @@ void destroi_arena(Arena *a) {
   free(a);
 }
 
-/*//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
-int verifica_exercito_ativo(Exercito exerc){
+//Verifica se existe pelo menos 1 robo de 1 exercito vivo:
+int verifica_exercito_ativo(Exercito exerc){ 
+  int XcoordBaseExerc = exerc.pos_celula_base[0]; // coordenada X da base do exercito em questao
+  int YcoordBaseExerc = exerc.pos_celula_base[1]; // coordenada Y da base do exercito em questao
+  if(celulas[XcoordExerc][YcoordExerc].cristais >= 5) return 0; //Se a base do exercito em questao tiver 5 cristais, jogo acaba
   int i;
-  for(i = 0; i < 3; i++){                         //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
-    if(exerc.robos[i]->energia > 0) return 1;     //caso haja 1 robo vivo, return 1 = "ativo";
+  int cont;
+  for(i = 0; i < 3; i++){                     //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
+    if(exerc.robos[i]->energia > 0){
+      cont = 1;
+    }else{
+      celulas[registros[exerc.robo[i]].pos[0]][registros[exerc.robo[i]].pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (ocupaco=0)
+    }
   }
-  return 0;                                       //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
-}*/
+  if(cont == 1) return 1;                     //caso haja 1 robo vivo, return 1 = "ativo";
+  else return 0;                              //caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo".
+}
 
 int verifica_continuidade(void){                                      //não continua se excedeu o numero maximo de rodadas.
     int i;
-    int cont = 0;
+    int quant = 0;
+    int exerc_vencedor = -1;
     for(i = 0; i < 2; i++){ //dois exercitos apenas
         exercitos[i].ativo = verifica_exercito_ativo(exercitos[i]); //verificar se existem exercitos ativos.
-        if (exercitos[i].ativo == 1) cont++;
-        if (cont > 1) return 1;                                             //se há pelo menos dois exercitos ativos, continua
+        if (exercitos[i].ativo == 1) quant++, exerc_vencedor = i;   //guarda o numero do exercito que ta ativo.
     }
-    return 0;
+    if (quant == 2) return -1;                                       //se os dois exercitos estao ativos, o jogo continua(retorna -1)
+    else return exerc_vencedor;                                     //caso haja apenas 1, retorna o numero do unico exercito ativo(vencedor)
 }
 
 
 void escalonador(Arena *a, int quant_rod){
     int i;
     for(i = 0; i < quant_rod; i++){
-      if(verifica_continuidade() == 1){
+      if(verifica_continuidade() < 0){ //funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
         for(i = 0; i < topo_reg; i++){ //faz todas os robos executarem 50 instruções
           exec_maquina(registros[i], 50);
           //Atualiza(); //atualiza a arena depois de cada conjunto de ações de cada robo
         }
+      }else{
+        printf("Vencedor: Exército %d\n",verifica_continuidade); //Printa o exercito vencedor.
+        break;                                                   //Jogo acaba.
       }
     }
 }

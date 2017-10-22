@@ -266,8 +266,11 @@ void exec_maquina(Maquina *m, int n) {
 
   case ATR:
     tmp = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados.
-    int value = arg.valor; //0 = terreno, 1 = cristais, 2 = ocupado, 3 = base; eh dado no arg.valor
-    empilha(pil, tmp) ; //empilha na pilha de dados o atributo "arg.valor" da celula que foi desempilhada.
+    op1.t = tmp.t;         //Atribui o tipo do operando1 o mesmo do operando que foi desempilhado
+
+    //tipos de arg.valor: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
+    op1.valor = op1.t[arg.valor]; //Coloca no "op1.valor" o valor do atributo desejado(quant. de cristais, se ta ocupado, se é base ou o tipo de terreno)
+    empilha(pil, op1) ; //empilha na pilha de dados o operando op1, cujo atributo requerido está armazenado no "op1.valor" 
     break;
 
   case SIS:
