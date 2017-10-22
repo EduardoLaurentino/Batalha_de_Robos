@@ -209,7 +209,7 @@ void escalonador(Arena *a, int quant_rod){
     for(i = 0; i < quant_rod; i++){
       verifica_cont = verifica_continuidade();//funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
       if(verifica_cont < 0){
-        for(j = 0; j < 6; j++){ //faz todas os robos executarem 50 instruções
+        for(j = 0; j < 6; j++){ //faz todas os robos executarem 10 instruções por rodadas
           exec_maquina(registros[j], 10);
         }
       }else{
@@ -233,7 +233,6 @@ int celula_existe(int x, int y){
 }
 
 int retira_energia_movimento(Maquina *m, Terreno terreno){
-  printf("\nentrouaqui!\n");
   switch(terreno){
     case ESTRADA:
       if(m->energia >= 10) {m->energia -= 10; return 1;}
