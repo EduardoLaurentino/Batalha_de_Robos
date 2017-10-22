@@ -38,10 +38,6 @@ typedef enum {
   ACAO,
   VAR,
   CELULA,
-  MOV,
-  EXTR,
-  POR,
-  ATK,
 } Tipo;
 
 /* Tipo de terreno */

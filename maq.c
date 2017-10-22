@@ -264,9 +264,10 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case ATR:
-    tmp = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados.
+    tmp.t = arg.t;
+     = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados.
     int value = arg.valor; //0 = terreno, 1 = cristais, 2 = ocupado, 3 = base; eh dado no arg.valor
-    empilha(pil, tmp.valor.value) ; //empilha na pilha de dados o atributo "arg.valor" da celula que foi desempilhada.
+    empilha(pil, tmp) ; //empilha na pilha de dados o atributo "arg.valor" da celula que foi desempilhada.
     break;
 
   /*@Lais @Laurent:

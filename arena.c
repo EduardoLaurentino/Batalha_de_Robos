@@ -12,7 +12,6 @@ static void Fatal(char *msg, int cod) {
 }
 
 Arena *a;
-
 Arena *cria_arena() {
   Arena *a = (Arena*)malloc(sizeof(Arena));
   if (!a) Fatal("Memória insuficiente",4);
@@ -22,76 +21,76 @@ Arena *cria_arena() {
   a->topo_reg = 0;
 
   //vetor de ponteiros
-  Celula **celulas = (Celula**)malloc(100 * sizeof(Celula*));
-  if (!celulas) Fatal("Memória insuficiente",4);
+  a->celulas = (Celula**)malloc(100 * sizeof(Celula*));
+  if (!a->celulas) Fatal("Memória insuficiente",4);
   for (int i = 0; i < 100; i++){
     //aloca um vetor de Celulas para cada posição do vetor de ponteiros
-    celulas[i] = (Celula*) malloc(100 * sizeof(Celula));
+    a->celulas[i] = (Celula*) malloc(100 * sizeof(Celula));
       //percorre o vetor de Celulas atual, determinando caracteristicas de cada uma
       for (int j = 0; j < 100; j++) {
-        celulas[i][j].x = i;
-        celulas[i][j].y = j;
-        celulas[i][j].ocupado = 0; //ocupado = 0 significa sem ocupacao
-        celulas[i][j].base = -1; //base = -1 significa sem base; base = 0 time = 0; base = 1 time = 1
+        a->celulas[i][j].x = i;
+        a->celulas[i][j].y = j;
+        a->celulas[i][j].ocupado = 0; //ocupado = 0 significa sem ocupacao
+        a->celulas[i][j].base = -1; //base = -1 significa sem base; base = 0 time = 0; base = 1 time = 1
       }
   }
 
   for (int i = 0; i < 20; i++) {
     for (int j = 0; j < 20; j++) {
-      celulas[i][j].terreno = 1;
-      celulas[i][20+j].terreno = 3;
-      celulas[i][40+j].terreno = 4;
-      celulas[i][60+j].terreno = 1;
-      celulas[i][80+j].terreno = 1;
+      a->celulas[i][j].terreno = 1;
+      a->celulas[i][20+j].terreno = 3;
+      a->celulas[i][40+j].terreno = 4;
+      a->celulas[i][60+j].terreno = 1;
+      a->celulas[i][80+j].terreno = 1;
 
-      celulas[20+i][j].terreno = 3;
-      celulas[20+i][20+j].terreno = 3;
-      celulas[20+i][40+j].terreno = 1;
-      celulas[20+i][60+j].terreno = 2;
-      celulas[20+i][80+j].terreno = 1;
+      a->celulas[20+i][j].terreno = 3;
+      a->celulas[20+i][20+j].terreno = 3;
+      a->celulas[20+i][40+j].terreno = 1;
+      a->celulas[20+i][60+j].terreno = 2;
+      a->celulas[20+i][80+j].terreno = 1;
 
-      celulas[40+i][j].terreno = 4;
-      celulas[40+i][20+j].terreno = 1;
-      celulas[40+i][40+j].terreno = 2;
-      celulas[40+i][60+j].terreno = 1;
-      celulas[40+i][80+j].terreno = 4;
+      a->celulas[40+i][j].terreno = 4;
+      a->celulas[40+i][20+j].terreno = 1;
+      a->celulas[40+i][40+j].terreno = 2;
+      a->celulas[40+i][60+j].terreno = 1;
+      a->celulas[40+i][80+j].terreno = 4;
 
-      celulas[60+i][j].terreno = 1;
-      celulas[60+i][20+j].terreno = 2;
-      celulas[60+i][40+j].terreno = 1;
-      celulas[60+i][60+j].terreno = 3;
-      celulas[60+i][80+j].terreno = 3;
+      a->celulas[60+i][j].terreno = 1;
+      a->celulas[60+i][20+j].terreno = 2;
+      a->celulas[60+i][40+j].terreno = 1;
+      a->celulas[60+i][60+j].terreno = 3;
+      a->celulas[60+i][80+j].terreno = 3;
 
-      celulas[80+i][j].terreno = 1;
-      celulas[80+i][20+j].terreno = 1;
-      celulas[80+i][40+j].terreno = 4;
-      celulas[80+i][60+j].terreno = 3;
-      celulas[80+i][80+j].terreno = 1;
+      a->celulas[80+i][j].terreno = 1;
+      a->celulas[80+i][20+j].terreno = 1;
+      a->celulas[80+i][40+j].terreno = 4;
+      a->celulas[80+i][60+j].terreno = 3;
+      a->celulas[80+i][80+j].terreno = 1;
     }
   }
 
-  //cria 200 cristais
+  //cria 20 cristais
   srand(time(NULL));
-  for (int i = 0; i < 200; i++) {
+  for (int i = 0; i < 20; i++) {
       int num1 = rand() % 99;
       int num2 = rand() % 99;
 
       //se a celula ja tiver cristais, so adiciona mais
-      switch (celulas[num1][num2].terreno) {
+      switch (a->celulas[num1][num2].terreno) {
         case 0:
-          celulas[num1][num2].cristais += 1;
+          a->celulas[num1][num2].cristais += 1;
           break;
         case 1:
-          celulas[num1][num2].cristais += 2;
+          a->celulas[num1][num2].cristais += 2;
           break;
         case 2:
-          celulas[num1][num2].cristais += 5;
+          a->celulas[num1][num2].cristais += 5;
           break;
         case 3:
-          celulas[num1][num2].cristais += 4;
+          a->celulas[num1][num2].cristais += 4;
           break;
         case 4:
-          celulas[num1][num2].cristais += 3;
+          a->celulas[num1][num2].cristais += 3;
           break;
       }
   }
@@ -123,7 +122,7 @@ void InsereExercito(Arena *a) {
   exercitos[topo_ex].pos_celula_base[1] = y;
 
   //registra na celula o numero do exercito que tem base ali
-  //celulas[x][y].base = topo_ex;
+  celulas[x][y].base = topo_ex;
 
   //a posicao dos robos do exercito no vetor de registros
   //e' colocado no vetor de robos do exercito
@@ -138,10 +137,10 @@ void InsereExercito(Arena *a) {
     registros[exercitos[topo_ex].robos[i]]->pos[1] = exercitos[topo_ex].pos_celula_base[1];
 
     //ativa ocupacao da celula
-    //celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
+    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
 
     //coloca na celula a info da maquina que esta ocupando o local
-    //celulas[pos_celula_base[0]+i+1][pos_celula_base[1]].maquina_no_local = i;
+    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = i;
   }
   topo_ex++;
 }
@@ -150,23 +149,12 @@ void RemoveExercito(Arena *a, int num_ex) {
   //desativa exercito
   exercitos[num_ex].ativo = 0;
 
-  //for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++)
     //retira a ocupacao das celulas onde os robos do exercito estavam
-    //celulas[registros[exercitos[num_ex].robos[i]]->pos[0]][registros[exercitos[num_ex].robos[i]]->pos[1]].ocupado = 0;
+    celulas[registros[exercitos[num_ex].robos[i]]->pos[0]][registros[exercitos[num_ex].robos[i]]->pos[1]].ocupado = 0;
 
     //retira a base
-    //celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = 0;
-}
-
-
-
-void Atualiza(Arena *a, int quant_rod) {
-  while (tempo < quant_rod) {
-    if (verifica_continuidade(a) == 0) break;
-    for (int i = 0; i < topo_reg; i++) //cada robo executa 50 instrucoes por rodada
-      exec_maquina(registros[i], 50);
-    tempo++; //quantas rodadas ja foram
-  }
+    celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = 0;
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo
