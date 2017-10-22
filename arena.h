@@ -11,7 +11,7 @@ typedef struct {
 
 typedef struct {
   Celula **celulas; //ponteiro para matriz de celulas
-  Exercito exercitos[2]; //5 exercitos no total, maximo de 100 robos
+  Exercito exercitos[2]; //2 exercitos no total, maximo de 100 robos
   Maquina *registros[100];
   int topo_ex; //local do vetor para inserir novos exercitos
   int topo_reg; //local do vetor para inserir novas maquinas
@@ -29,7 +29,7 @@ int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exer
 
 int verifica_continuidade(void); //"int" para usarmos retornos 0 ou 1, simulando booleana
 
-void escalonador(int quant_rod);
+void escalonador(Arena *a, int quant_rod);
 
 
 void destroi_arena(Arena *a);
