@@ -118,8 +118,15 @@ void InsereExercito(Arena *a) {
 
   //define o local *aleatorio* da base
   srand(time(NULL));
-  int x = rand() % 96;
-  int y = rand() % 96;
+  int x;
+  int y;
+  int ok = 0;
+  
+  while (ok == 0) {
+    x = rand() % 96;
+    y = rand() % 96;
+    if (celulas[x][y].base == -1) ok = 1;
+  }
   exercitos[topo_ex].pos_celula_base[0] = x;
   exercitos[topo_ex].pos_celula_base[1] = y;
 
@@ -132,7 +139,7 @@ void InsereExercito(Arena *a) {
     exercitos[topo_ex].robos[i] = (topo_ex*3) + i;
     //coloca em cada robo o numero do seu proprio exercito e do registro na arena
     registros[exercitos[topo_ex].robos[i]]->exercito = topo_ex;
-    registros[exercitos[topo_ex].robos[i]]->registro = i;
+    registros[exercitos[topo_ex].robos[i]]->registro = (topo_ex*3) + i;
 
     //coloca na maquina qual a posicao dela na arena
     registros[exercitos[topo_ex].robos[i]]->pos[0] = exercitos[topo_ex].pos_celula_base[0]+i+1;
@@ -142,7 +149,7 @@ void InsereExercito(Arena *a) {
     celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].ocupado = 1;
 
     //coloca na celula a info da maquina que esta ocupando o local
-    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = i;
+    celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = (topo_ex*3) + i;
   }
   topo_ex++;
 }
@@ -157,7 +164,7 @@ void RemoveExercito(Arena *a, int num_ex) {
     celulas[registros[exercitos[num_ex].robos[i]]->pos[0]][registros[exercitos[num_ex].robos[i]]->pos[1]].ocupado = 0;
 
     //retira a base
-    celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = 0;
+    celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = -1;
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo
@@ -199,7 +206,7 @@ int verifica_continuidade(void){                                      //não con
 }
 
 
-void escalonador(int quant_rod){
+void escalonador(Arena *a, int quant_rod){
     int i;
     for(i = 0; i < quant_rod; i++){
       if(verifica_continuidade() == 1){
@@ -307,7 +314,7 @@ int extracao(Maquina *m, int i, int j){
   else return 0;
 }
 
-int poe_cristal(Maquina *m, int i, int j){
+int por_cristal(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
     celulas[i][j].cristais += 1;
     m->cristais -= 1;
