@@ -6,7 +6,7 @@ ip = 0
 tabsim = {}
 
 print("#include <stdio.h>")
-print("#include \"maq.h\"\n")
+print("#include \"arena.h\"\n")
 
 
 print("INSTR programa[] = {")
