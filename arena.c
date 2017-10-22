@@ -314,7 +314,7 @@ int extracao(Maquina *m, int i, int j){
   else return 0;
 }
 
-int poe_cristal(Maquina *m, int i, int j){
+int por_cristal(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1 && m->cristais > 0) { //verifica se a célula para a qual quer ir existe e esta vazia e tbm se tem cristais na maquina
     celulas[i][j].cristais += 1;
     m->cristais -= 1;

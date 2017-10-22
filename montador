@@ -35,7 +35,7 @@ while l:
         if arg_valor in tabsim:
             arg_valor = tabsim[arg_valor]
     if op != "":
-        print("  {%s, %s, %s},"%(op,arg_t,arg_valor))
+        print("  {%s, {%s, %s}},"%(op,arg_t,arg_valor))
     else:
         print("")
     l = stdin.readline()
