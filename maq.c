@@ -40,18 +40,18 @@ char *CODES[] = {
 #  define D(X)
 #endif
 
-static void Erro(char *msg) {
+static void Error(char *msg) {
   fprintf(stderr, "%s\n", msg);
 }
 
-static void Fatal(char *msg, int cod) {
-  Erro(msg);
+static void FatalError(char *msg, int cod) {
+  Error(msg);
   exit(cod);
 }
 
 Maquina *cria_maquina(INSTR *p) {
   Maquina *m = (Maquina*)malloc(sizeof(Maquina));
-  if (!m) Fatal("Memória insuficiente",4);
+  if (!m) FatalError("Memória insuficiente",4);
 
   m->ip.valor = 0;
   m->rbp.valor = 0; //novo registrador
@@ -251,10 +251,10 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case STL:
-      exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava
+      exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o Error em que STL desempilhava
       break;                                                  //da memoria. Agora desempilha da exec.
   case RCE:
-      empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o erro em que RCE empilhava
+      empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o Error em que RCE empilhava
       break;                                                 //na memoria. Agora empilha na exec.
 
   case ALC:
