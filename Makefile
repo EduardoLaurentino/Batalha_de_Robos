@@ -1,6 +1,6 @@
-motor: maq.o pilha.o motor.o
+arena: testearena.o arena.o maq.o pilha.o
+
+#movimento: testemovimentacao.o arena.o maq.o pilha.o
 
 clean:
-	rm -f motor *.o
-
-
+	rm -f arena *.o #rm -f movimento *.o

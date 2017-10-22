@@ -204,13 +204,13 @@ int verifica_continuidade(){                                      //não continu
 
 
 void escalonador(Arena *a, int quant_rod){
-    int i;
+    int i, j;
     int verifica_cont;
     for(i = 0; i < quant_rod; i++){
-      verifica_cont = verifica_continuidade(); //funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
-      if(verifica_cont < 0){ 
-        for(i = 0; i < topo_reg; i++){ //faz todas os robos executarem 50 instruções
-          exec_maquina(registros[i], 50);
+      verifica_cont = verifica_continuidade();//funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
+      if(verifica_cont < 0){
+        for(j = 0; j < 6; j++){ //faz todas os robos executarem 50 instruções
+          exec_maquina(registros[j], 10);
         }
       }else{
         printf("Vencedor: Exército %d\n",verifica_cont); //Printa o exercito vencedor.
@@ -233,6 +233,7 @@ int celula_existe(int x, int y){
 }
 
 int retira_energia_movimento(Maquina *m, Terreno terreno){
+  printf("\nentrouaqui!\n");
   switch(terreno){
     case ESTRADA:
       if(m->energia >= 10) {m->energia -= 10; return 1;}
@@ -322,7 +323,7 @@ int por_cristal(Maquina *m, int i, int j){
     m->energia -= 20;
   }else{
     return 0;
-  } 
+  }
 }
 
 int atacar(Maquina *m, int i, int j){
@@ -345,7 +346,7 @@ int Sistema(OPERANDO op, Maquina *m){
 
   if (op.t == MOV){
       if (dir == aqui){ //é a operacao de descanso, que recarrega um pouco de energia
-          if (m->energia < 800) {m->energia += 10; return 1;} //aumenta a energia e retorna o sucesso do procedimento
+          if (m->energia < 800 && m->energia > 0) {m->energia += 20; return 1;} //aumenta a energia e retorna o sucesso do procedimento; só pode aumentar energia se ainda estiver vivo (energia > 0)
           return 0; //se não conseguir aumentar energia (uma vez que ficou com menos de 1000, nao pode voltar a ter 1000;
       }
       else if (dir == norte)    return movimentacao(m, x-1, y);

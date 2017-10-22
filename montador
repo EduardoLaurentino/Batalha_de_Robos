@@ -6,6 +6,7 @@ ip = 0
 tabsim = {}
 
 print("#include <stdio.h>")
+print("#include <stdlib.h>")
 print("#include \"arena.h\"\n")
 
 

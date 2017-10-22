@@ -14,7 +14,6 @@ typedef struct {
   int registro; //guarda a posição no vetor de registro da arena
   int energia; //começará com 1000 pontos de energia
   int exercito;
-  //int registro; //numero de registro na arena
 } Maquina;
 
 Maquina *cria_maquina(INSTR *p);
@@ -22,3 +21,5 @@ Maquina *cria_maquina(INSTR *p);
 void destroi_maquina(Maquina *m);
 
 void exec_maquina(Maquina *m, int n);
+
+

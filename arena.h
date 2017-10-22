@@ -11,7 +11,7 @@ typedef struct {
 
 typedef struct {
   Celula **celulas; //ponteiro para matriz de celulas
-  Exercito exercitos[2]; //2 exercitos no total, maximo de 100 robos
+  Exercito exercitos[2]; //2 exercitos no total, maximo de 6 robos
   Maquina *registros[100];
   int topo_ex; //local do vetor para inserir novos exercitos
   int topo_reg; //local do vetor para inserir novas maquinas
@@ -51,5 +51,5 @@ int poe_cristal(Maquina *m, int i, int j);
 
 int atacar(Maquina *m, int i, int j);
 
-int Sistema(OPERANDO op, Maquina *m);
+
 

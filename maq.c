@@ -263,26 +263,27 @@ void exec_maquina(Maquina *m, int n) {
     topo = topo - arg.valor; //Desaloca "arg" espaços na exec. (Implementado na Fase2)
     break;
 
-  /*case ATR:
+  case ATR:
     tmp = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados. (estamos assumindo que é uma celula que estará no topo da pil)
     op1.t = tmp.t;         //Atribui o tipo do operando1 o mesmo do operando que foi desempilhado
     switch(arg.valor){     //tipos de arg.valor: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
       case(0):
-        op1.valor = op1.t.terreno;  // armazena no op1.valor o tipo de terreno presente na celula desempilhada
+        op1.valor = tmp.val.cel.terreno;  // armazena no op1.valor o tipo de terreno presente na celula desempilhada
         break;
       case(1):
-        op1.valor = op1.t.cristais;  // armazena no op1.valor a quantidade de cristais presente na celula desempilhada
+        op1.valor = tmp.val.cel.cristais;  // armazena no op1.valor a quantidade de cristais presente na celula desempilhada
         break;
       case(2):
-        op1.valor = op1.t.ocupado;  // armazena no op1.valor 0: se celula desempilhada estiver desocupada ou 1: se celula desempilhada estiver ocupada
+        op1.valor = tmp.val.cel.ocupado;  // armazena no op1.valor 0: se celula desempilhada estiver desocupada ou 1: se celula desempilhada estiver ocupada
         break;
       case(3):
-        op1.valor = op1.t.base;  // armazena no op1.valor: -1, se nao for base/ 0, se for base do exercito 0/ 1, se for base do exercito 1;
+        op1.valor = tmp.val.cel.base;  // armazena no op1.valor: -1, se nao for base/ 0, se for base do exercito 0/ 1, se for base do exercito 1;
+        break;
     }
-    empilha(pil, op1) ; //empilha na pilha de dados o operando op1, cujo atributo requerido está armazenado no "op1.valor" 
-    break;;*/
+    empilha(pil, op1) ; //empilha na pilha de dados o operando op1, cujo atributo requerido está armazenado no "op1.valor"
+    break;
 
-  case SIS:
+  case SIS: //caso de chamada do sistema, que preenche o operando temporário com o tipo de solicitação feita e, no valor, 0 se a operação não deu certo e 1 se foi bem sucedida (ver implementação do sistema em "arena.c")
     tmp.t = arg.t;
     tmp.valor = Sistema(arg, m);
     empilha(pil, tmp);

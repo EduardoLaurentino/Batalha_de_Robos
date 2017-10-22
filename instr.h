@@ -59,7 +59,7 @@ typedef struct {
   int cristais;
   int ocupado;
   int base;
-  int x;
+  int x; //x, y = posição da célula na matriz de celulas da arena
   int y;
   int maquina_no_local; //posicao da maquina no vetor de registros // o mesmo que o atributo "registro" da maquina
 } Celula;
@@ -68,12 +68,12 @@ typedef struct {
 typedef struct {
   Tipo t;
   int valor;
-  /*union {
+  union {
     int n;
     int ac;
     int v;
     Celula cel;
-  } val;*/
+  } val;
 } OPERANDO;
 
 
