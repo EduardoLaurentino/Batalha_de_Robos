@@ -13,11 +13,12 @@ INSTR programa[] = {
 };
 
 void testes_arena(Arena *a) {
+  int i, j;
   printf("TESTES-ARENA\n\n");
 
   printf("Matriz/Cristais na arena:\n\n");
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; j < 100; j++) {
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < 100; j++) {
       if (a->celulas[i][j].cristais == 0) printf(".");
       else printf("%d", a->celulas[i][j].cristais);
     }
@@ -26,8 +27,8 @@ void testes_arena(Arena *a) {
   printf("\n");
 
   printf("Matriz/Terrenos da arena:\n\n");
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; j < 100; j++) {
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < 100; j++) {
       printf("%d", a->celulas[i][j].terreno);
     }
     printf("\n");
@@ -36,8 +37,9 @@ void testes_arena(Arena *a) {
 }
 
 void testes_insercao(Arena *a) {
+  int i, j;
   printf("Registros/Dados dos robos:\n\n");
-  for (int i = 0; i < 6; i++) {
+  for (i = 0; i < 6; i++) {
     printf("Robo: %d\n", i);
     printf("Registro: %d\n", a->registros[i]->registro);
     printf("Energia: %d\n", a->registros[i]->energia);
@@ -49,8 +51,8 @@ void testes_insercao(Arena *a) {
   printf("\n");
 
   printf("Matriz/Localizacao das bases na arena apos insercao:\n\n");
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; j < 100; j++) {
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < 100; j++) {
       if (a->celulas[i][j].base == -1) printf(".");
       else printf("%d", a->celulas[i][j].base);
     }
@@ -58,13 +60,13 @@ void testes_insercao(Arena *a) {
   }
   printf("\n");
 
-  for (int i = 0; i < 2; i++)
+  for (i = 0; i < 2; i++)
     printf("Coordenadas X: %d Y: %d\n", a->exercitos[i].pos_celula_base[0], a->exercitos[i].pos_celula_base[1]);
   printf("\n");
 
   printf("Matriz/Localizacao dos robos na arena apos insercao:\n\n");
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; j < 100; j++) {
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < 100; j++) {
       if (a->celulas[i][j].ocupado == 0) printf(".");
       else printf("%d", a->celulas[i][j].ocupado);
     }
@@ -73,11 +75,11 @@ void testes_insercao(Arena *a) {
   printf("\n");
 
   printf("Dados dos exercitos:\n\n");
-  for (int i = 0; i < 2; i++) {
+  for (i = 0; i < 2; i++) {
     printf("Ativo: %d\n", a->exercitos[i].ativo);
     printf("Posicao da base: X %d Y %d\n", a->exercitos[i].pos_celula_base[0], a->exercitos[i].pos_celula_base[1]);
 
-    for (int j = 0; j < 3; j++) {
+    for (j = 0; j < 3; j++) {
       printf("Numero do exercito nos robos: %d\n", a->registros[a->exercitos[i].robos[j]]->exercito);
     }
   }
@@ -85,9 +87,10 @@ void testes_insercao(Arena *a) {
 }
 
 void testes_remocao(Arena *a) {
+  int i, j;
   printf("Localizacao das bases na arena apos remocao:\n\n");
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; j < 100; j++) {
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < 100; j++) {
       if (a->celulas[i][j].base == -1) printf(".");
       else printf("%d", a->celulas[i][j].base);
     }
@@ -96,8 +99,8 @@ void testes_remocao(Arena *a) {
   printf("\n");
 
   printf("Localizacao dos robos na arena apos remocao:\n\n");
-  for (int i = 0; i < 100; i++) {
-    for (int j = 0; j < 100; j++) {
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < 100; j++) {
       if (a->celulas[i][j].ocupado == 0) printf(".");
       else printf("%d", a->celulas[i][j].ocupado);
     }

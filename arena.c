@@ -186,7 +186,7 @@ void destroi_arena(Arena *a) {
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo:
-int verifica_exercito_ativo(Exercito exerc){ 
+int verifica_exercito_ativo(Exercito exerc){
   int XcoordBaseExerc = exerc.pos_celula_base[0]; // coordenada X da base do exercito em questao
   int YcoordBaseExerc = exerc.pos_celula_base[1]; // coordenada Y da base do exercito em questao
   if(celulas[XcoordExerc][YcoordExerc].cristais >= 5) return 0; //Se a base do exercito em questao tiver 5 cristais, jogo acaba
@@ -196,7 +196,7 @@ int verifica_exercito_ativo(Exercito exerc){
     if(exerc.robos[i]->energia > 0){
       cont = 1;
     }else{
-      celulas[registros[exerc.robo[i]].pos[0]][registros[exerc.robo[i]].pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (ocupaco=0)
+      celulas[registros[exerc.robo[i]].pos[0]][registros[exerc.robo[i]].pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
     }
   }
   if(cont == 1) return 1;                     //caso haja 1 robo vivo, return 1 = "ativo";
@@ -209,7 +209,7 @@ int verifica_continuidade(void){                                      //não con
     int exerc_vencedor = -1;
     for(i = 0; i < 2; i++){ //dois exercitos apenas
         exercitos[i].ativo = verifica_exercito_ativo(exercitos[i]); //verificar se existem exercitos ativos.
-        if (exercitos[i].ativo == 1) quant++, exerc_vencedor = i;   //guarda o numero do exercito que ta ativo.
+        if (exercitos[i].ativo == 1) {quant++; exerc_vencedor = i;}   //guarda o numero do exercito que ta ativo.
     }
     if (quant == 2) return -1;                                       //se os dois exercitos estao ativos, o jogo continua(retorna -1)
     else return exerc_vencedor;                                     //caso haja apenas 1, retorna o numero do unico exercito ativo(vencedor)
