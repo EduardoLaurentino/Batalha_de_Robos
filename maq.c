@@ -58,6 +58,12 @@ Maquina *cria_maquina(INSTR *p) {
   m->energia = 1000;
   m->exec = cria_pilha();
   m->pil = cria_pilha();
+  m->saude = 1000;
+  m->arma[0] = 30;
+  m->arma[1] = 50;
+  m->arma[2] = 80;
+  m->arma[3] = 140;
+  m->isCiclo = 0;
   return m;
 }
 
@@ -236,10 +242,10 @@ void exec_maquina(Maquina *m, int n) {
     break;
 
   case STO:
-    m->Mem[arg.valor] = desempilha(pil);
+    m->Mem[arg.valor + 6] = desempilha(pil); //o + 6 representa que os 6 primeiros espacos do vetor estarão guardando infos das 6 celulas vizinhas.
     break;
   case RCL:
-    empilha(pil,m->Mem[arg.valor]);
+    empilha(pil,m->Mem[arg.valor + 6]);
     break;
   case END:
     return;

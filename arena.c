@@ -113,22 +113,20 @@ void RegistroMaquina(Arena *a, Maquina *m) {
 //insere o novo exercito e cria uma base para ele
 void InsereExercito(Arena *a) {
   int i;
+  int j;
   //ativa exercito
   exercitos[topo_ex].ativo = 1;
 
-  //define o local *aleatorio* da base
-  srand(time(NULL));
-  int x;
-  int y;
-  int ok = 0;
-
-  while (ok == 0) {
-    x = rand() % 96;
-    y = rand() % 96;
-    if (celulas[x][y].base == -1) ok = 1;
+  //o local  da base sera sempre (4,4) para o "Exercito 0" e (96,96) para o "Exercito 1"
+  if(topo_ex == 0){
+    exercitos[topo_ex].pos_celula_base[0] = 4;
+    exercitos[topo_ex].pos_celula_base[1] = 4;
+    celulas[4][4].base = 0;
+  }else{
+    exercitos[topo_ex].pos_celula_base[0] = 96;
+    exercitos[topo_ex].pos_celula_base[1] = 96;
+    celulas[96][96].base = 1;
   }
-  exercitos[topo_ex].pos_celula_base[0] = x;
-  exercitos[topo_ex].pos_celula_base[1] = y;
 
   //registra na celula o numero do exercito que tem base ali
   celulas[x][y].base = topo_ex;
@@ -150,8 +148,40 @@ void InsereExercito(Arena *a) {
 
     //coloca na celula a info da maquina que esta ocupando o local
     celulas[exercitos[topo_ex].pos_celula_base[0]+i+1][exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = (topo_ex*3) + i;
+    for(j = 0, j < 6; j++) {
+      exercitos[topo_ex].robos[i]->MEM[j] = reconheceVizinhaça(exercitos[topo_ex].robos[i], j);
+    }
   }
   topo_ex++;
+}
+
+OPERANDO reconheceVizinhaça(Maquina* m, int j) { //Armazena na memoria[0-5] as celulas da vizinhança
+  switch(j){
+    case 0:                                     // Posicao Nordeste
+        if(m->pos[0] == 0 || m->pos[1] == 100) return 0;
+        return celulas[m->pos[0] + 1][m->pos[1] + 1];
+        break;
+    case 1:                                    // Posicao Leste
+        if(m->pos[1] == 100) return 0;
+        return celulas[m->pos[0]][m->pos[1] + 1];
+        break;
+    case 2:                                     // Posicao Sudeste
+        if(m->pos[0] == 100 || m->pos[1] == 100) return 0;
+        return celulas[m->pos[0] - 1][m->pos[1] + 1];
+        break;
+    case 3:                                     // Posicao Sudoeste
+        if(m->pos[0] == 100 || m->pos[1] == 0) return 0;
+        return celulas[m->pos[0] - 1][m->pos[1] - 1];
+        break;
+    case 4:                                     // Posicao Oeste
+        if(m->pos[1] == 0) return 0;
+        return celulas[m->pos[0]][m->pos[1] - 1];
+        break;
+    case 5:                                     // Posicao Noroeste
+        if(m->pos[0] == 0 || m->pos[1] == 0) return 0;
+        return celulas[m->pos[0] + 1][m->pos[1] - 1];
+        break;
+  }
 }
 
 void RemoveExercito(Arena *a, int num_ex) {
@@ -180,7 +210,7 @@ int verifica_exercito_ativo(Exercito exerc){
   int i;
   int cont;
   for(i = 0; i < 3; i++){                    //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
-    if(registros[exerc.robos[i]]->energia > 0){
+    if(registros[exerc.robos[i]]->saude > 0){
       cont = 1;
     }else{
       celulas[registros[exerc.robos[i]]->pos[0]][registros[exerc.robos[i]]->pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
@@ -210,7 +240,8 @@ void escalonador(Arena *a, int quant_rod){
       verifica_cont = verifica_continuidade();//funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
       if(verifica_cont < 0){
         for(j = 0; j < 6; j++){ //faz todas os robos executarem 10 instruções por rodadas
-          exec_maquina(registros[j], 10);
+          if(registros[j]->isCiclo == 0) exec_maquina(registros[j], 10);
+          else                           registro[j]->isCiclo -= 1;
         }
       }else{
         printf("Vencedor: Exército %d\n",verifica_cont); //Printa o exercito vencedor.
@@ -234,23 +265,27 @@ int celula_existe(int x, int y){
 
 int retira_energia_movimento(Maquina *m, Terreno terreno){
   switch(terreno){
-    case ESTRADA:
+    case ESTRADA: //Consegue se movimentar no seu proprio turno, pois ESTRADA é um terreno de facil movimentação.
       if(m->energia >= 10) {m->energia -= 10; return 1;}
       else return 0;
       break;
     case TERRA:
+      m->isCiclo == 1; //Demora apenas 1 turno para se movimentar caso o terreno seja do tipo TERRA
       if(m->energia >= 15) {m->energia -= 15; return 1;}
       else return 0;
       break;
     case LAMA:
+      m->isCiclo == 1; //Demora apenas 1 turno para se movimentar caso o terreno seja do tipo LAMA
       if(m->energia >= 20) {m->energia -= 20; return 1;}
       else return 0;
       break;
     case AGUA:
+      m->isCiclo == 2; //Demora 2 turnos para se movimentar caso o terreno seja do tipo AGUA
       if(m->energia >= 25) {m->energia -= 25; return 1;}
       else return 0;
       break;
     case MONTANHA:
+      m->isCiclo == 2; //Demora 2 turnos para se movimentar caso o terreno seja do tipo MONTANHA
       if(m->energia >= 30) {m->energia -= 30; return 1;}
       else return 0;
       break;
@@ -259,23 +294,27 @@ int retira_energia_movimento(Maquina *m, Terreno terreno){
 
 int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
     switch(terreno){
-      case AGUA:
+      case AGUA: //Consegue retirar cristal no seu proprio turno, pois AGUA é um terreno facil de se extrair.
         if(m->energia >= 5 + 20) {m->energia -= 5; return 1;}
         else return 0;
         break;
-      case LAMA:
+      case LAMA: 
+        m->isCiclo == 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo LAMA
         if(m->energia >= 7 + 20) {m->energia -= 7; return 1;}
         else return 0;
         break;
-      case TERRA:
+      case TERRA: 
+        m->isCiclo == 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo TERRA
         if(m->energia >= 9 + 20) {m->energia -= 9; return 1;}
         else return 0;
         break;
-      case ESTRADA:
+      case ESTRADA: 
+        m->isCiclo == 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo ESTRADA
         if(m->energia >= 12 + 20) {m->energia -= 12; return 1;}
         else return 0;
         break;
-      case MONTANHA:
+      case MONTANHA: 
+        m->isCiclo == 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo MONTANHA
         if(m->energia >= 15 + 20) {m->energia -= 15; return 1;}
         else return 0;
         break;
@@ -300,6 +339,21 @@ int movimentacao(Maquina *m, int i, int j){
     m->pos[1] = j; //atualiza posicao robo
     celulas[x][y].maquina_no_local = m->registro;
     celulas[x][y].ocupado = 1;
+    switch(terreno){
+      case ESTRADA: //Consegue se movimentar no seu proprio turno, pois ESTRADA é um terreno de facil movimentação.
+        break;
+      case TERRA:
+        m->isCiclo == 1; //Demora apenas 1 turno para se movimentar caso o terreno seja do tipo TERRA
+        break;
+      case LAMA:
+        m->isCiclo == 1; //Demora apenas 1 turno para se movimentar caso o terreno seja do tipo LAMA
+        break;
+      case AGUA:
+        m->isCiclo == 2; //Demora 2 turnos para se movimentar caso o terreno seja do tipo AGUA
+      case MONTANHA:
+        m->isCiclo == 2; //Demora 2 turnos para se movimentar caso o terreno seja do tipo MONTANHA
+        break;
+    }
     return 1;
   }
   else return 0;
@@ -310,6 +364,22 @@ int extracao(Maquina *m, int i, int j){
     celulas[i][j].cristais -= 1;
     m->cristais += 1;
     m->energia -= 20; //perda de energia maior por fazer extração em célula vizinha (fazer extração em céula vizinha ao invés de onde sestá tem custo energético maior);
+    switch(celulas[i][j].terreno){
+      case AGUA: //Consegue retirar cristal no seu proprio turno, pois AGUA é um terreno facil de se extrair.
+        break;
+      case LAMA: 
+        m->isCiclo == 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo LAMA
+        break;
+      case TERRA: 
+        m->isCiclo == 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo TERRA
+        break;
+      case ESTRADA: 
+        m->isCiclo == 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo ESTRADA
+        break;
+      case MONTANHA: 
+        m->isCiclo == 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo MONTANHA
+        break;
+    }
     return 1;
   }
   else return 0;
@@ -325,15 +395,19 @@ int por_cristal(Maquina *m, int i, int j){
   }
 }
 
-int atacar(Maquina *m, int i, int j){
-  if (celula_existe(i, j) == 1 && m->energia >= 30){
+int atacar(Maquina *m, int i, int j, int n){
+  int perde;
+  if(n == 1) m->isCiclo == 1, perde = 3; //Caso nao esteja em um ciclo e escolher a arma tipo 1(a mais forte), ele fica ocupado por 1 turno.
+  //                          se a arma(n) for a do tipo 1, o oponente perde 'arma[3]' de saude.
+  if(n == 0) perde = 1; //se a arma(n) for a do tipo 0, o oponente perde 'arma[1]' de saude
+  if (celula_existe(i, j) == 1 && m->energia >= arma[perde - 1]){
     if(celulas[i][j].ocupado == 1){ //tem robo pra ser atacado
-      registros[celulas[i][j].maquina_no_local]->energia -= 130;//retura energia do robo atacado;tacado
-      m->energia -= 30;//perde energia por atacar com sucesso
+      registros[celulas[i][j].maquina_no_local]->saude -= arma[perde];//retura energia do robo atacado;tacado
+      m->energia -= arma[perde - 1];//perde energia por atacar com sucesso
       return 1;
     }
     else{
-      m->energia -= 30; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
+      m->energia -= arma[perde - 1]; //perde energia simplesmente por atacar, pra impedir que fique atacando descreteriosamente
       return 0; //não atacou
     }
   }
@@ -348,10 +422,10 @@ int Sistema(OPERANDO op, Maquina *m){
           if (m->energia < 800 && m->energia > 0) {m->energia += 20; return 1;} //aumenta a energia e retorna o sucesso do procedimento; só pode aumentar energia se ainda estiver vivo (energia > 0)
           return 0; //se não conseguir aumentar energia (uma vez que ficou com menos de 1000, nao pode voltar a ter 1000;
       }
-      else if (dir == norte)    return movimentacao(m, x-1, y);
+      else if (dir == leste)    return movimentacao(m, x, y + 1);
       else if (dir == nordeste) return movimentacao(m, x-1, y+1);
       else if (dir == sudeste)  return movimentacao(m, x, y+1);
-      else if (dir == sul)      return movimentacao(m, x+1, y);
+      else if (dir == oeste)      return movimentacao(m, x, y - 1);
       else if (dir == sudoeste) return movimentacao(m, x, y-1);
       else if (dir == noroeste) return movimentacao(m, x-1, y-1);
   }
@@ -365,10 +439,10 @@ int Sistema(OPERANDO op, Maquina *m){
             }
             else return 0;
       }
-      else if (dir == norte)    return extracao(m, x-1, y);
+      else if (dir == leste)    return extracao(m, x, y + 1);
       else if (dir == nordeste) return extracao(m, x-1, y+1);
       else if (dir == sudeste)  return extracao(m, x, y+1);
-      else if (dir == sul)      return extracao(m, x+1, y);
+      else if (dir == oeste)      return extracao(m, x, y - 1);
       else if (dir == sudoeste) return extracao(m, x, y-1);
       else if (dir == noroeste) return extracao(m, x-1, y-1);
   }
@@ -382,10 +456,10 @@ int Sistema(OPERANDO op, Maquina *m){
             }
             else return 0;
       }
-      else if (dir == norte)    return por_cristal(m, x-1, y);
+      else if (dir == leste)    return por_cristal(m, x, y + 1);
       else if (dir == nordeste) return por_cristal(m, x-1, y+1);
       else if (dir == sudeste)  return por_cristal(m, x, y+1);
-      else if (dir == sul)      return por_cristal(m, x+1, y);
+      else if (dir == oeste)      return por_cristal(m, x, y - 1);
       else if (dir == sudoeste) return por_cristal(m, x, y-1);
       else if (dir == noroeste) return por_cristal(m, x-1, y-1);
   }
@@ -398,10 +472,10 @@ int Sistema(OPERANDO op, Maquina *m){
             }
             return 0; //sem energia suficiente
        }
-      else if (dir == norte)    return atacar(m, x-1, y);
+      else if (dir == leste)    return atacar(m, x, y + 1);
       else if (dir == nordeste) return atacar(m, x-1, y+1);
       else if (dir == sudeste)  return atacar(m, x, y+1);
-      else if (dir == sul)      return atacar(m, x+1, y);
+      else if (dir == oeste)      return atacar(m, x, y - 1);
       else if (dir == sudoeste) return atacar(m, x, y-1);
       else if (dir == noroeste) return atacar(m, x-1, y-1);
   }

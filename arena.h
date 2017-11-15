@@ -12,7 +12,7 @@ typedef struct {
 typedef struct {
   Celula **celulas; //ponteiro para matriz de celulas
   Exercito exercitos[2]; //2 exercitos no total, maximo de 6 robos
-  Maquina *registros[100];
+  Maquina *registros[6]; // 3 robos por exercito, totalizando 6 robos.
   int topo_ex; //local do vetor para inserir novos exercitos
   int topo_reg; //local do vetor para inserir novas maquinas
   int tempo;
