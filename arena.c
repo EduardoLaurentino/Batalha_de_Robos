@@ -95,6 +95,14 @@ Arena *cria_arena() {
           break;
       }
   }
+  // o comando abaixo envia para o arquivo em python o tipo de terreno e a quantidade de cristais
+  // de cada célula da arena
+  for(i = 0; i < 100; i++){
+    for(j = 0; j < 100; j++){
+      fprintf(display, "cel %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais);
+    }
+  }
+
   return a;
 }
 
@@ -152,6 +160,20 @@ void InsereExercito(Arena *a) {
       exercitos[topo_ex].robos[i]->MEM[j] = reconheceVizinhaça(exercitos[topo_ex].robos[i], j);
     }
   }
+
+  // os comandos abaixo irão mandar para o arquivo em python as coordenadas da base do exército em questão,
+  // a imagem do robô associado a este exército e as posições de todos os robôs
+  fprintf(display, "base %d %d %d\n", topo_ex, exercitos[topo_ex].pos_celula_base[0], exercitos[topo_ex].pos_celula_base[1]);
+  
+  for(i = 0; i < 3; i++){
+    if(topo_ex == 0){
+      fprintf(display, "rob GILEAD_A.png\n");
+      fprintf(display, "robo %d 0 %d %d\n", exercitos[0].robos[i], registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
+    }else{
+      fprintf(display, "rob GILEAD_B.png\n");
+      fprintf(display, "robo %d 1 %d %d\n", exercitos[1].robos[i], registros[exercitos[1].robos[i]]->pos[0], registros[exercitos[1].robos[i]]->pos[1]);
+    }
+  }
   topo_ex++;
 }
 
@@ -189,17 +211,26 @@ void RemoveExercito(Arena *a, int num_ex) {
   //desativa exercito
   exercitos[num_ex].ativo = 0;
 
+  //retira a base
+  celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = -1;
+
+  int xbase = exercitos[num_ex].pos_celula_base[0];
+  int ybase = exercitos[num_ex].pos_celula_base[1];
+  fprintf(display, "cel %d %d %d %d\n", xbase, ybase, a->celulas[xbase][ybase].terreno, a->celulas[xbase][ybase].cristais);
+
   for (i = 0; i < 3; i++)
     //retira a ocupacao das celulas onde os robos do exercito estavam
     celulas[registros[exercitos[num_ex].robos[i]]->pos[0]][registros[exercitos[num_ex].robos[i]]->pos[1]].ocupado = 0;
 
-    //retira a base
-    celulas[exercitos[num_ex].pos_celula_base[0]][exercitos[num_ex].pos_celula_base[1]].base = -1;
+    int x = registros[exercitos[num_ex].robos[i]]->pos[0];
+    int y = registros[exercitos[num_ex].robos[i]]->pos[1];
+    fprintf(display, "cel %d %d %d %d\n", x, y, a->celulas[x][y].terreno, a->celulas[x][y].cristais);
 }
 
 void destroi_arena(Arena *a) {
   free(celulas);
   free(a);
+  fprintf("fim\n");
 }
 
 //Verifica se existe pelo menos 1 robo de 1 exercito vivo:
@@ -209,11 +240,15 @@ int verifica_exercito_ativo(Exercito exerc){
   if(celulas[XcoordBaseExerc][YcoordBaseExerc].cristais >= 5) return 0; //Se a base do exercito em questao tiver 5 cristais, jogo acaba
   int i;
   int cont;
-  for(i = 0; i < 3; i++){                    //varredura de todos os robos ate encontrar pelo menos 1 com energia > 0.
+  for(i = 0; i < 3; i++){                    //varredura de todos os robos ate encontrar pelo menos 1 com saude > 0.
     if(registros[exerc.robos[i]]->saude > 0){
       cont = 1;
     }else{
       celulas[registros[exerc.robos[i]]->pos[0]][registros[exerc.robos[i]]->pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
+      
+      int x = registros[exercitos[num_ex].robos[i]]->pos[0];
+      int y = registros[exercitos[num_ex].robos[i]]->pos[1];
+      fprintf(display, "cel %d %d %d %d\n", x, y, a->celulas[x][y].terreno, a->celulas[x][y].cristais);
     }
   }
   if(cont == 1) return 1;                     //caso haja 1 robo vivo, return 1 = "ativo";
@@ -335,10 +370,18 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 int movimentacao(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_movimento(m, celulas[i][j].terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
     celulas[x][y].ocupado = 0; //muda o status da celula onde tava para desocupada
+    fprintf(display, "cel %d %d %d %d\n", x, y, a->celulas[x][y].terreno, a->celulas[x][y].cristais);
     m->pos[0] = i;
     m->pos[1] = j; //atualiza posicao robo
     celulas[x][y].maquina_no_local = m->registro;
     celulas[x][y].ocupado = 1;
+    if(m->exercito == 0){
+      fprintf(display, "rob GILEAD_A.png\n");
+      fprintf(display, "robo %d 0 %d %d\n", m->registro, m->pos[0], m->pos[1]);
+    }else{
+      fprintf(display, "rob GILEAD_B.png\n");
+      fprintf(display, "robo %d 1 %d %d\n", m->registro, m->pos[0], m->pos[1]);
+    }
     switch(terreno){
       case ESTRADA: //Consegue se movimentar no seu proprio turno, pois ESTRADA é um terreno de facil movimentação.
         break;
@@ -380,6 +423,16 @@ int extracao(Maquina *m, int i, int j){
         m->isCiclo == 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo MONTANHA
         break;
     }
+    fprintf(display, "cel %d %d %d %d\n", x, y, a->celulas[i][j].terreno, a->celulas[i][j].cristais);
+    if(i == m->pos[0] && j == m->pos[1]){
+      if(m->exercito == 0){
+        fprintf(display, "rob GILEAD_A.png\n");
+        fprintf(display, "robo %d 0 %d %d\n", m->registro, m->pos[0], m->pos[1]);
+      }else{
+        fprintf(display, "rob GILEAD_B.png\n");
+        fprintf(display, "robo %d 1 %d %d\n", m->registro, m->pos[0], m->pos[1]);
+      }
+    }
     return 1;
   }
   else return 0;
@@ -390,6 +443,7 @@ int por_cristal(Maquina *m, int i, int j){
     celulas[i][j].cristais += 1;
     m->cristais -= 1;
     m->energia -= 20;
+    fprintf(display, "cel %d %d %d %d\n", x, y, a->celulas[i][j].terreno, a->celulas[i][j].cristais);
   }else{
     return 0;
   }
@@ -479,4 +533,53 @@ int Sistema(OPERANDO op, Maquina *m){
       else if (dir == sudoeste) return atacar(m, x, y-1);
       else if (dir == noroeste) return atacar(m, x-1, y-1);
   }
+} 
+int main(int ac, char **av) {
+  display = popen("./apres", "w");
+
+  if (display == NULL) {
+    fprintf(stderr,"Não encontrei o programa de exibição\n");
+    return 1;
+  }
+
+  Arena *a = cria_arena();
+
+  //jogador 1 com 3 robos no exercito
+  Maquina *maq0 = cria_maquina(programa);
+  RegistroMaquina(a, maq0);
+
+  Maquina *maq1 = cria_maquina(programa);
+  RegistroMaquina(a, maq1);
+
+  Maquina *maq2 = cria_maquina(programa);
+  RegistroMaquina(a, maq2);
+
+  InsereExercito(a);
+
+  //jogador 2 com 3 robos no exercito
+  Maquina *maq3 = cria_maquina(programa);
+  RegistroMaquina(a, maq3);
+
+  Maquina *maq4 = cria_maquina(programa);
+  RegistroMaquina(a, maq4);
+
+  Maquina *maq5 = cria_maquina(programa);
+  RegistroMaquina(a, maq5);
+
+  InsereExercito(a);
+
+  RemoveExercito(a, 1);
+  RemoveExercito(a, 0);
+
+  testes_remocao(a);
+
+  destroi_maquina(maq0);
+  destroi_maquina(maq1);
+  destroi_maquina(maq2);
+  destroi_maquina(maq3);
+  destroi_maquina(maq4);
+  destroi_maquina(maq5);
+
+  destroi_arena(a);
+  return 0;
 }
