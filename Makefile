@@ -1,4 +1,4 @@
-arena: testearena.o arena.o maq.o pilha.o
+arena: arena.o maq.o pilha.o
 
 movimento: teste_sistema_e_escalonador.o arena.o maq.o pilha.o
 
