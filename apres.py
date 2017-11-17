@@ -4,13 +4,13 @@ import fileinput
 
 from math import *
 
-pg.init()                                 # inicialização do
+pg.init()                                 # inicialização do sistema
 
 # altura e largura da arena, em células
-H, W = 15,15
+H, W = 100,100
 
 # largura da célula
-l = 26
+l = 30
 # altura da célula
 L = 2*l/sqrt(3)
 
@@ -21,7 +21,7 @@ atu = pg.display.update
 
 
 # pinta o fundo da janela
-scr.fill((127,127,127))
+scr.fill((0,200,0))
 atu()
 
 def convert(i ,j):
@@ -34,7 +34,7 @@ def convert(i ,j):
 
 class Robô(pg.sprite.Sprite):
     """
-    Representa um robo, possui uma imagem
+    Representa um Robô, possui uma imagem
     """
     def __init__(s, img):
         """
@@ -46,7 +46,7 @@ class Robô(pg.sprite.Sprite):
 
     def draw(s, i,j):
         """
-        Desenha o robo na célula (i,j)
+        Desenha o robô na célula (i,j)
         """
         x, y = convert(i,j)
 
@@ -63,35 +63,14 @@ class cell:
     """
     Representa uma das células da arena
     """
-    def __init__(s,i,j, terreno, cristais, base):
+    def __init__(s,i,j):
         """
         Construtor, i e j formam a coordenada
         """
         # Posição do centro
         s.cx, s.cy = convert(i,j)
         # Cor (pode ser passada para o construtor no futuro)
-        if (base == 0): #se for base do exercito 1, celula azul
-            s.cor = (0,0,200)
-        elif (base == 1): #se for base do exercito 2, celula vermelha
-            s.cor = (200,0,0)
-        #se não for base, pinta de acordo com o tipo de terreno
-        elif (terreno == 0):
-            s.cor = (200,200,200)
-        elif (terreno == 1):
-            s.cor = (100,100,100)
-        elif (terreno == 2):
-            s.cor = (50,50,50)
-        elif (terreno == 3):
-            s.cor = (25,10,42)
-        elif (terreno == 4):
-            s.cor = (2,5,7)
-
-        #se tiver cristais na celula, ela terá contorno rosa. pra saber se tem mais de um, vai ter que consultar
-        if (cristais > 0):
-            s.contorno = (243, 123, 173)
-        else:
-            s.contorno = (0,0,0)
-
+        s.cor = (200,200,200)
 
         # Vértices do hexágono
         s.pontos = (
@@ -108,7 +87,7 @@ class cell:
         Desenha a célula
         """
         pg.draw.polygon(scr, s.cor, s.pontos, 0)
-        pg.draw.lines(scr, s.contorno, True, s.pontos, 2)
+        pg.draw.lines(scr, (0,0,0), True, s.pontos, 2)
 
 
 # Construção da matriz que representa a arena
@@ -116,15 +95,11 @@ arena = []
 for i in range(15):
     arena.append([])
     for j in range(15):
-        arena[i].append(cell(i,j, 1, 0, -1))
+        arena[i].append(cell(i,j))
         arena[i][j].draw()
 
-# lista dos robos definidos
+# lista dos robôs definidos
 robs = []
-#for i in range(3):
-#    robs[i].append(robo(GILEAD_A.png))
-#for j in range(4, 6):
-#    robs[i].append(robo(GILEAD_B.png))
 
 # atualiza a janela
 atu()
@@ -137,26 +112,20 @@ for line in fileinput.input():
     if r[0] == 'fim':
         break
 
-    if r[0] == 'cel':
-       arena[int(r[1])][int(r[2])] = cell(int(r[1]), int(r[2]), int(r[3]), int(r[4]), int(r[5]))
-       arena[int(r[1])][int(r[2])].draw()
-       continue
-
-    # linha começando com 'rob', inclui um robo,
+    # linha começando com 'rob', inclui um robô,
     # o segundo argumento na linha é a imagem
     if r[0] == 'rob':
         robs.append(Robô(r[1]))
         continue
 
-
     # linha de movimentação:
-    # robo, corrdenadas originais, coordenadas finais
+    # robô, corrdenadas originais, coordenadas finais
     ri, oi, oj, di, dj = list(map(int, r))
 
-    # redesenha a célula original (apaga o robo)
+    # redesenha a célula original (apaga o robô)
     if 0 <= oi  < W and 0 <= oj < H:
         arena[oi][oj].draw()
-    # desenha o robo na célula de destino
+    # desenha o robô na célula de destino
     if 0 <= di  < W and 0 <= dj < H and ri < len(robs):
         robs[ri].draw(di,dj)
 

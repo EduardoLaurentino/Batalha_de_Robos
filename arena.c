@@ -101,7 +101,7 @@ Arena *cria_arena() {
   // de cada célula da arena
   for(i = 0; i < 15; i++){
     for(j = 0; j < 15; j++){
-      fprintf(display, "cel %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais);
+      fprintf(display, "cel %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais, a->celulas[i][j].base);
     }
   }
 
@@ -235,7 +235,7 @@ void InsereExercito(Arena *a) {
   // os comandos abaixo irão mandar para o arquivo em python as coordenadas da base do exército em questão,
   // a imagem do robô associado a este exército e as posições de todos os robôs
   fprintf(display, "base %d %d %d\n", topo_ex, exercitos[topo_ex].pos_celula_base[0], exercitos[topo_ex].pos_celula_base[1]);
-  
+
   for(i = 0; i < 3; i++){
     if(topo_ex == 0){
       fprintf(display, "rob GILEAD_A.png\n");
@@ -376,22 +376,22 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
         if(m->energia >= 25) {m->energia -= 5; return 1;}
         else return 0;
         break;
-      case LAMA: 
+      case LAMA:
         m->isCiclo = 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo LAMA
         if(m->energia >= 27) {m->energia -= 7; return 1;}
         else return 0;
         break;
-      case TERRA: 
+      case TERRA:
         m->isCiclo = 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo TERRA
         if(m->energia >= 29) {m->energia -= 9; return 1;}
         else return 0;
         break;
-      case ESTRADA: 
+      case ESTRADA:
         m->isCiclo = 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo ESTRADA
         if(m->energia >= 32) {m->energia -= 12; return 1;}
         else return 0;
         break;
-      case MONTANHA: 
+      case MONTANHA:
         m->isCiclo = 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo MONTANHA
         if(m->energia >= 35) {m->energia -= 15; return 1;}
         else return 0;
@@ -453,16 +453,16 @@ int extracao(Maquina *m, int i, int j){
     switch(celulas[i][j].terreno){
       case AGUA: //Consegue retirar cristal no seu proprio turno, pois AGUA é um terreno facil de se extrair.
         break;
-      case LAMA: 
+      case LAMA:
         m->isCiclo = 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo LAMA
         break;
-      case TERRA: 
+      case TERRA:
         m->isCiclo = 1; //Demora apenas 1 turno para retirar cristal caso o terreno seja do tipo TERRA
         break;
-      case ESTRADA: 
+      case ESTRADA:
         m->isCiclo = 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo ESTRADA
         break;
-      case MONTANHA: 
+      case MONTANHA:
         m->isCiclo = 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo MONTANHA
         break;
     }
@@ -508,7 +508,7 @@ int atacar(Maquina *m, int i, int j, int n){
     }
   }else{
     return 0;
-  } 
+  }
 }
 
 int Sistema(OPERANDO op, Maquina *m){
@@ -577,7 +577,7 @@ int Sistema(OPERANDO op, Maquina *m){
       else if (dir == sudoeste) return atacar(m, x, y-1, op.val.n);
       else if (dir == noroeste) return atacar(m, x-1, y-1, op.val.n);
   }
-} 
+}
 int main(int ac, char **av) {
 
   display = popen("./apres", "w");
