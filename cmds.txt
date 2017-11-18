@@ -1,5 +1,5 @@
-rob GILEAD_A.png
-rob GILEAD_B.png
+rob GILEAD_A.png 1 1
+rob GILEAD_B.png 1 1
 0 1 1 1 1
 1 1 1 4 5
 0 1 1 1 2

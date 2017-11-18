@@ -101,6 +101,7 @@ Arena *cria_arena() {
   // de cada célula da arena
   for(i = 0; i < 15; i++){
     for(j = 0; j < 15; j++){
+      //envia info de cada celula para ser desenhada
       fprintf(display, "cel %d %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais, a->celulas[i][j].base);
     }
   }
@@ -240,10 +241,12 @@ void InsereExercito(Arena *a) {
 
   // os comandos abaixo irão mandar para o arquivo em python as coordenadas da base do exército em questão,
   // a imagem do robô associado a este exército e as posições de todos os robôs
-  fprintf(display, "cel %d %d %d %d\n", p, q, a->celulas[p][q].terreno, a->celulas[p][q].cristais, topo_ex);
+  //redesenha celula com nova cor/base
+  fprintf(display, "cel %d %d %d %d\n", p, q, celulas[p][q].terreno, celulas[p][q].cristais, topo_ex);
 
   for(i = 0; i < 3; i++){
     if(topo_ex == 0){
+      //envia imagem e posicao inicial dos robos para serem desenhados
       fprintf(display, "rob GILEAD_A.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
     }else{
       fprintf(display, "rob GILEAD_B.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
@@ -264,6 +267,7 @@ void RemoveExercito(Arena *a, int num_ex) {
 
   int xbase = exercitos[num_ex].pos_celula_base[0];
   int ybase = exercitos[num_ex].pos_celula_base[1];
+  //redesenha celula sem a cor/base
   fprintf(display, "cel %d %d %d %d %d\n", xbase, ybase, celulas[xbase][ybase].terreno, celulas[xbase][ybase].cristais, celulas[xbase][ybase].base);
 
   for (i = 0; i < 3; i++)
@@ -272,6 +276,7 @@ void RemoveExercito(Arena *a, int num_ex) {
 
     int x = registros[exercitos[num_ex].robos[i]]->pos[0];
     int y = registros[exercitos[num_ex].robos[i]]->pos[1];
+    //redesenha celula sem o robo
     fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
 }
 
@@ -295,6 +300,8 @@ int verifica_exercito_ativo(Exercito exerc){
       celulas[registros[exerc.robos[i]]->pos[0]][registros[exerc.robos[i]]->pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
       int x = registros[exerc.robos[i]]->pos[0];
       int y = registros[exerc.robos[i]]->pos[1];
+      
+      //envia info da celula para ser redesenhada sem o robo
       fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
     }
   }
