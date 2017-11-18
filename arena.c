@@ -105,8 +105,6 @@ void cria_arena() {
       fprintf(display, "cel %d %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais, a->celulas[i][j].base);
     }
   }
-
-  return a;
 }
 
 #define registros (a->registros)
