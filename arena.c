@@ -242,7 +242,7 @@ void InsereExercito(Arena *a) {
   // os comandos abaixo irão mandar para o arquivo em python as coordenadas da base do exército em questão,
   // a imagem do robô associado a este exército e as posições de todos os robôs
   //redesenha celula com nova cor/base
-  fprintf(display, "cel %d %d %d %d\n", p, q, celulas[p][q].terreno, celulas[p][q].cristais, topo_ex);
+  fprintf(display, "cel %d %d %d %d %d\n", p, q, celulas[p][q].terreno, celulas[p][q].cristais, topo_ex);
 
   for(i = 0; i < 3; i++){
     if(topo_ex == 0){
