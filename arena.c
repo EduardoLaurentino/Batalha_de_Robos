@@ -101,7 +101,7 @@ Arena *cria_arena() {
   // de cada célula da arena
   for(i = 0; i < 15; i++){
     for(j = 0; j < 15; j++){
-      fprintf(display, "cel %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais, a->celulas[i][j].base);
+      fprintf(display, "cel %d %d %d %d %d\n", i, j, a->celulas[i][j].terreno, a->celulas[i][j].cristais, a->celulas[i][j].base);
     }
   }
 
@@ -196,13 +196,19 @@ void InsereExercito(Arena *a) {
   exercitos[topo_ex].ativo = 1;
 
   //o local  da base sera sempre (4,4) para o "Exercito 0" e (96,96) para o "Exercito 1"
+  int p;
+  int q;
   if(topo_ex == 0){
     exercitos[topo_ex].pos_celula_base[0] = 2;
+    p = 2;
     exercitos[topo_ex].pos_celula_base[1] = 2;
+    q = 2;
     celulas[2][2].base = 0;
   }else{
     exercitos[topo_ex].pos_celula_base[0] = 13;
+    p = 13;
     exercitos[topo_ex].pos_celula_base[1] = 13;
+    q = 13;
     celulas[13][13].base = 1;
   }
 
@@ -234,15 +240,13 @@ void InsereExercito(Arena *a) {
 
   // os comandos abaixo irão mandar para o arquivo em python as coordenadas da base do exército em questão,
   // a imagem do robô associado a este exército e as posições de todos os robôs
-  fprintf(display, "base %d %d %d\n", topo_ex, exercitos[topo_ex].pos_celula_base[0], exercitos[topo_ex].pos_celula_base[1]);
+  fprintf(display, "cel %d %d %d %d\n", p, q, a->celulas[p][q].terreno, a->celulas[p][q].cristais, topo_ex);
 
   for(i = 0; i < 3; i++){
     if(topo_ex == 0){
-      fprintf(display, "rob GILEAD_A.png\n");
-      fprintf(display, "robo %d 0 %d %d\n", exercitos[0].robos[i], registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
+      fprintf(display, "rob GILEAD_A.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
     }else{
-      fprintf(display, "rob GILEAD_B.png\n");
-      fprintf(display, "robo %d 1 %d %d\n", exercitos[1].robos[i], registros[exercitos[1].robos[i]]->pos[0], registros[exercitos[1].robos[i]]->pos[1]);
+      fprintf(display, "rob GILEAD_B.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
     }
   }
   topo_ex++;
@@ -260,7 +264,7 @@ void RemoveExercito(Arena *a, int num_ex) {
 
   int xbase = exercitos[num_ex].pos_celula_base[0];
   int ybase = exercitos[num_ex].pos_celula_base[1];
-  fprintf(display, "cel %d %d %d %d\n", xbase, ybase, celulas[xbase][ybase].terreno, celulas[xbase][ybase].cristais);
+  fprintf(display, "cel %d %d %d %d %d\n", xbase, ybase, celulas[xbase][ybase].terreno, celulas[xbase][ybase].cristais, celulas[xbase][ybase].base);
 
   for (i = 0; i < 3; i++)
     //retira a ocupacao das celulas onde os robos do exercito estavam
@@ -268,7 +272,7 @@ void RemoveExercito(Arena *a, int num_ex) {
 
     int x = registros[exercitos[num_ex].robos[i]]->pos[0];
     int y = registros[exercitos[num_ex].robos[i]]->pos[1];
-    fprintf(display, "cel %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais);
+    fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
 }
 
 void destroi_arena(Arena *a) {
@@ -291,7 +295,7 @@ int verifica_exercito_ativo(Exercito exerc){
       celulas[registros[exerc.robos[i]]->pos[0]][registros[exerc.robos[i]]->pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
       int x = registros[exerc.robos[i]]->pos[0];
       int y = registros[exerc.robos[i]]->pos[1];
-      fprintf(display, "cel %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais);
+      fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
     }
   }
   if(cont == 1) return 1;                     //caso haja 1 robo vivo, return 1 = "ativo";
@@ -414,17 +418,19 @@ int movimentacao(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_movimento(m, celulas[i][j].terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
     celulas[i][j].ocupado = 0; //muda o status da celula onde tava para desocupada
     fprintf(display, "cel %d %d %d %d\n", i, j, celulas[i][j].terreno, celulas[i][j].cristais);
+    int posxvelho = m->pos[0];
+    int posyvelho = m->pos[1];
     m->pos[0] = i;
     m->pos[1] = j; //atualiza posicao robo
     celulas[i][j].maquina_no_local = m->registro;
     celulas[i][j].ocupado = 1;
-    if(m->exercito == 0){
-      fprintf(display, "rob GILEAD_A.png\n");
-      fprintf(display, "robo %d 0 %d %d\n", m->registro, m->pos[0], m->pos[1]);
-    }else{
-      fprintf(display, "rob GILEAD_B.png\n");
-      fprintf(display, "robo %d 1 %d %d\n", m->registro, m->pos[0], m->pos[1]);
-    }
+    //if(m->exercito == 0){
+      //fprintf(display, "rob GILEAD_A.png\n");
+      fprintf(display, "%d %d %d %d %d\n", m->registro, posxvelho, posyvelho, m->pos[0], m->pos[1]);
+    //}else{
+      //fprintf(display, "rob GILEAD_B.png\n");
+      //fprintf(display, "%d %d %d %d %d\n", m->registro, m->pos[0], m->pos[1]);
+    //}
     switch(celulas[i][j].terreno){
       case ESTRADA: //Consegue se movimentar no seu proprio turno, pois ESTRADA é um terreno de facil movimentação.
         break;
@@ -466,15 +472,15 @@ int extracao(Maquina *m, int i, int j){
         m->isCiclo = 2; //Demora 2 turnos para retirar cristal caso o terreno seja do tipo MONTANHA
         break;
     }
-    fprintf(display, "cel %d %d %d %d\n", x, y, celulas[i][j].terreno, celulas[i][j].cristais);
+    fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[i][j].terreno, celulas[i][j].cristais, celulas[i][j].base);
     if(i == m->pos[0] && j == m->pos[1]){
-      if(m->exercito == 0){
-        fprintf(display, "rob GILEAD_A.png\n");
-        fprintf(display, "robo %d 0 %d %d\n", m->registro, m->pos[0], m->pos[1]);
-      }else{
-        fprintf(display, "rob GILEAD_B.png\n");
-        fprintf(display, "robo %d 1 %d %d\n", m->registro, m->pos[0], m->pos[1]);
-      }
+      //if(m->exercito == 0){
+        //fprintf(display, "rob GILEAD_A.png\n");
+        fprintf(display, "%d %d %d %d %d\n", m->registro, m->pos[0], m->pos[1], m->pos[0], m->pos[1]);
+      //}else{
+       // fprintf(display, "rob GILEAD_B.png\n");
+       //fprintf(display, "robo %d 1 %d %d\n", m->registro, m->pos[0], m->pos[1]);
+      //}
     }
     return 1;
   }
@@ -486,7 +492,7 @@ int por_cristal(Maquina *m, int i, int j){
     celulas[i][j].cristais += 1;
     m->cristais -= 1;
     m->energia -= 20;
-    fprintf(display, "cel %d %d %d %d\n", x, y, celulas[i][j].terreno, celulas[i][j].cristais);
+    fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[i][j].terreno, celulas[i][j].cristais, celulas[i][j].base);
   }else{
     return 0;
   }
