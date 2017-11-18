@@ -14,7 +14,7 @@ static void Fatal(char *msg, int cod) {
 }
 
 Arena *a;
-Arena *cria_arena() {
+cria_arena() {
   int i, j;
   a = (Arena *) malloc(sizeof(Arena));
   if (!a) Fatal("Memória insuficiente",4);
