@@ -18,7 +18,7 @@ typedef struct {
   int tempo;
 } Arena;
 
-Arena *cria_arena();
+void cria_arena();
 void RegistroMaquina(Arena *a, Maquina *m);
 void InsereExercito(Arena *a);
 void RemoveExercito(Arena *a, int num_ex);
