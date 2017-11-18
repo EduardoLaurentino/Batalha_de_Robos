@@ -610,7 +610,7 @@ int main(int ac, char **av) {
     return 1;
   }
 
-  Arena *a = cria_arena();
+  cria_arena();
 
   //jogador 1 com 3 robos no exercito
   Maquina *maq0 = cria_maquina(programa);
