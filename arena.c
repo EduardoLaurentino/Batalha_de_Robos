@@ -247,17 +247,10 @@ void InsereExercito() {
   for(i = 0; i < 3; i++){
     if(topo_ex == 0){
       //envia imagem e posicao inicial dos robos para serem desenhados
-<<<<<<< HEAD
       fprintf(display, "rob GILEAD_A.png %d %d %d\n", exercitos[0].robos[i], registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
       fflush(display);
     }else{
       fprintf(display, "rob GILEAD_B.png %d %d %d\n", exercitos[1].robos[i], registros[exercitos[1].robos[i]]->pos[0], registros[exercitos[1].robos[i]]->pos[1]);
-=======
-      fprintf(display, "rob GILEAD_A.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
-      fflush(display);
-    }else{
-      fprintf(display, "rob GILEAD_B.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
->>>>>>> 574146e73abfbf7b438909c3ad8b9a5980ea8d86
       fflush(display);
     }
   }
@@ -439,11 +432,7 @@ int movimentacao(Maquina *m, int i, int j){
     celulas[i][j].ocupado = 0; //muda o status da celula onde tava para desocupada
     fprintf(display, "cel %d %d %d %d\n", i, j, celulas[i][j].terreno, celulas[i][j].cristais);
     fflush(display);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 574146e73abfbf7b438909c3ad8b9a5980ea8d86
     int posxvelho = m->pos[0];
     int posyvelho = m->pos[1];
     m->pos[0] = i;
