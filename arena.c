@@ -247,9 +247,9 @@ void InsereExercito(Arena *a) {
   for(i = 0; i < 3; i++){
     if(topo_ex == 0){
       //envia imagem e posicao inicial dos robos para serem desenhados
-      fprintf(display, "rob GILEAD_A.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
+      fprintf(display, "rob GILEAD_A.png %d %d %d\n", exercitos[0].robos[i], registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
     }else{
-      fprintf(display, "rob GILEAD_B.png %d %d\n", registros[exercitos[0].robos[i]]->pos[0], registros[exercitos[0].robos[i]]->pos[1]);
+      fprintf(display, "rob GILEAD_B.png %d %d %d\n", exercitos[1].robos[i], registros[exercitos[1].robos[i]]->pos[0], registros[exercitos[1].robos[i]]->pos[1]);
     }
   }
   topo_ex++;
@@ -300,7 +300,7 @@ int verifica_exercito_ativo(Exercito exerc){
       celulas[registros[exerc.robos[i]]->pos[0]][registros[exerc.robos[i]]->pos[1]].ocupado = 0; //A celula em que o robo morreu se torna desocupada (desocupado=0)
       int x = registros[exerc.robos[i]]->pos[0];
       int y = registros[exerc.robos[i]]->pos[1];
-      
+
       //envia info da celula para ser redesenhada sem o robo
       fprintf(display, "cel %d %d %d %d %d\n", x, y, celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
     }
@@ -328,8 +328,8 @@ void escalonador(Arena *a, int quant_rod){
     for(i = 0; i < quant_rod; i++){
       verifica_cont = verifica_continuidade();//funcao "verifica_continuidade()" retorna -1: caso o jogo continue; 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
       if(verifica_cont < 0){
-        for(j = 0; j < 6; j++){ //faz todas os robos executarem 10 instruções por rodadas
-          if(registros[j]->isCiclo == 0) exec_maquina(registros[j], 10);
+        for(j = 0; j < 6; j++){ //faz todas os robos executarem 1 instrução por rodadas
+          if(registros[j]->isCiclo == 0) exec_maquina(registros[j], 1);
           else                           registros[j]->isCiclo -= 1;
         }
       }else{

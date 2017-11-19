@@ -56,7 +56,7 @@ class Robô(pg.sprite.Sprite):
         # corrije a posição de acordo com o tamanho do sprite
         s.rect.topleft = [x-l1/2,y-h1/2]
         # desenha
-        scr.blit(s.image, s.rect)    
+        scr.blit(s.image, s.rect)
 
 class cell:
     """
@@ -145,8 +145,8 @@ for line in fileinput.input():
     # o segundo argumento na linha é a imagem
     if r[0] == 'rob':
         robs.append(Robô(r[1]))
-        if 0 <= r[2]  < W and 0 <= r[3] < H and ri < len(robs):
-            robs[ri].draw(r[2],r[3])
+        if 0 <= int(r[3])  < W and 0 <= int(r[4]) < H and int(r[2]) < len(robs):
+            robs[int(r[2])].draw(int(r[3]), int(r[4]))
         continue
 
     # linha de movimentação:
