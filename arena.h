@@ -18,10 +18,10 @@ typedef struct {
   int tempo;
 } Arena;
 
-Arena *cria_arena();
-void RegistroMaquina(Arena *a, Maquina *m);
-void InsereExercito(Arena *a);
-void RemoveExercito(Arena *a, int num_ex);
+void cria_arena();
+void RegistroMaquina(Maquina *m);
+void InsereExercito();
+void RemoveExercito(int num_ex);
 
 int Sistema(OPERANDO op, Maquina *m);
 
@@ -29,9 +29,9 @@ int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exer
 
 int verifica_continuidade(void); //"int" para usarmos retornos 0 ou 1, simulando booleana
 
-void escalonador(Arena *a, int quant_rod);
+void escalonador(int quant_rod);
 
-void destroi_arena(Arena *a);
+void destroi_arena();
 
 int verifica_exercito_ativo(Exercito exerc); // 0 = nenhum robo de um certo exercito esta vivo; 1, caso contrario.
 
