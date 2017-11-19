@@ -654,6 +654,10 @@ int main(int ac, char **av) {
   //fflush(display);
 
   escalonador(1);
+  
+  int i;
+  for (i = 0; i < 1000000; i++)
+    i = i;
 
   destroi_maquina(maq0);
   destroi_maquina(maq1);
