@@ -74,7 +74,7 @@ void cria_arena() {
 
   //cria 20 cristais
   srand(time(NULL));
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 9; i++) {
       int num1 = rand() % 14;
       int num2 = rand() % 14;
 
@@ -205,11 +205,11 @@ void InsereExercito() {
     q = 2;
     celulas[2][2].base = 0;
   }else{
-    exercitos[topo_ex].pos_celula_base[0] = 13;
-    p = 13;
-    exercitos[topo_ex].pos_celula_base[1] = 13;
-    q = 13;
-    celulas[13][13].base = 1;
+    exercitos[topo_ex].pos_celula_base[0] = 9;
+    p = 9;
+    exercitos[topo_ex].pos_celula_base[1] = 9;
+    q = 9;
+    celulas[9][9].base = 1;
   }
 
   //registra na celula o numero do exercito que tem base ali
@@ -597,14 +597,27 @@ int main(int ac, char **av) {
 
   display = popen("./apres", "w");
 
-  INSTR programa[] = {
-    {PUSH, {NUM, 3}},
-    {PUSH, {NUM, 6}},
-    {CALL, {NUM, 5}},
-    {PRN,  {NUM, 0}},
-    {END,  {NUM, 0}},
-    {ADD,  {NUM, 0}},
-    {RET,  {NUM, 0}}
+
+  INSTR programa1[] = {
+    {SIS, {MOV, leste}},
+    {SIS, {MOV, leste}},
+    {SIS, {MOV, nordeste}},
+    {SIS, {MOV, leste}},
+    {SIS, {MOV, leste}},
+    {SIS, {MOV, nordeste}},
+    {SIS, {MOV, noroeste}},
+    {SIS, {MOV, aqui}},
+};
+
+  INSTR programa2[] = {
+    {SIS, {MOV, oeste}},
+    {SIS, {MOV, oeste}},
+    {SIS, {MOV, sudeste}},
+    {SIS, {MOV, sudeste}},
+    {SIS, {MOV, leste}},
+    {SIS, {MOV, sudoeste}},
+    {SIS, {MOV, leste}},
+    {SIS, {MOV, aqui}},
   };
 
   if (display == NULL) {
@@ -614,42 +627,40 @@ int main(int ac, char **av) {
 
   cria_arena();
 
-  /*//jogador 1 com 3 robos no exercito
-  Maquina *maq0 = cria_maquina(programa);
+  //jogador 1 com 3 robos no exercito
+  Maquina *maq0 = cria_maquina(programa2);
   RegistroMaquina(maq0);
 
-  Maquina *maq1 = cria_maquina(programa);
+  Maquina *maq1 = cria_maquina(programa2);
   RegistroMaquina(maq1);
 
-  Maquina *maq2 = cria_maquina(programa);
+  Maquina *maq2 = cria_maquina(programa2);
   RegistroMaquina(maq2);
 
   InsereExercito();
 
   //jogador 2 com 3 robos no exercito
-  Maquina *maq3 = cria_maquina(programa);
+  Maquina *maq3 = cria_maquina(programa1);
   RegistroMaquina(maq3);
 
-  Maquina *maq4 = cria_maquina(programa);
+  Maquina *maq4 = cria_maquina(programa1);
   RegistroMaquina(maq4);
 
-  Maquina *maq5 = cria_maquina(programa);
+  Maquina *maq5 = cria_maquina(programa1);
   RegistroMaquina(maq5);
 
   InsereExercito();
 
-<<<<<<< HEAD
-  escalonador(10);
-=======
-  escalonador(a, 10);
->>>>>>> 574146e73abfbf7b438909c3ad8b9a5980ea8d86
+  //fflush(display);
+
+  escalonador(1);
 
   destroi_maquina(maq0);
   destroi_maquina(maq1);
   destroi_maquina(maq2);
   destroi_maquina(maq3);
   destroi_maquina(maq4);
-  destroi_maquina(maq5);*/
+  destroi_maquina(maq5);
 
   destroi_arena();
   return 0;
