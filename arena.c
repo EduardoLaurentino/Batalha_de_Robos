@@ -631,33 +631,33 @@ int main(int ac, char **av) {
   cria_arena();
 
   //jogador 1 com 3 robos no exercito
-  Maquina *maq0 = cria_maquina(programa2);
+  Maquina *maq0 = cria_maquina(programa1);
   RegistroMaquina(maq0);
 
-  Maquina *maq1 = cria_maquina(programa2);
+  Maquina *maq1 = cria_maquina(programa1);
   RegistroMaquina(maq1);
 
-  Maquina *maq2 = cria_maquina(programa2);
+  Maquina *maq2 = cria_maquina(programa1);
   RegistroMaquina(maq2);
 
   InsereExercito();
 
   //jogador 2 com 3 robos no exercito
-  Maquina *maq3 = cria_maquina(programa1);
+  Maquina *maq3 = cria_maquina(programa2);
   RegistroMaquina(maq3);
 
-  Maquina *maq4 = cria_maquina(programa1);
+  Maquina *maq4 = cria_maquina(programa2);
   RegistroMaquina(maq4);
 
-  Maquina *maq5 = cria_maquina(programa1);
+  Maquina *maq5 = cria_maquina(programa2);
   RegistroMaquina(maq5);
 
   InsereExercito();
 
   //fflush(display);
 
-  escalonador(1);
-  
+  escalonador(20);
+
   int i;
   for (i = 0; i < 1000000; i++)
     i = i;
