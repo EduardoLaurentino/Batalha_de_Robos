@@ -430,11 +430,14 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno){
 int movimentacao(Maquina *m, int i, int j){
   if (verifica_ocupacao(i, j) == 0 && retira_energia_movimento(m, celulas[i][j].terreno) == 1) { //verifica se a célula para a qual quer ir existe e esta vazia e se o robo tem energia para ir, já subtraindo energia caso sim
     celulas[m->pos[0]][m->pos[1]].ocupado = 0; //muda o status da celula onde tava para desocupada
-    fprintf(display, "cel %d %d %d %d\n", i, j, celulas[i][j].terreno, celulas[i][j].cristais);
-    fflush(display);
 
     int posxvelho = m->pos[0];
     int posyvelho = m->pos[1];
+
+    fprintf(display, "cel %d %d %d %d %d\n", posxvelho, posyvelho, celulas[posxvelho][posyvelho].terreno, celulas[posxvelho][posyvelho].cristais, celulas[posxvelho][posyvelho].base);
+    fflush(display);
+
+
     m->pos[0] = i;
     m->pos[1] = j; //atualiza posicao robo
     celulas[i][j].maquina_no_local = m->registro;
