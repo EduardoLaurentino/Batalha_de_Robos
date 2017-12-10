@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "arena.h"
+#include "compila.tab.h"
 
 FILE *display;
 
@@ -716,12 +717,12 @@ int Sistema(OPERANDO op, Maquina *m){
       }
       else return 0; // sem energia suficiente
     }
-    else if (dir == leste)    return atacar(m, x, y + 1, op.val.n);
-    else if (dir == nordeste) return atacar(m, x-1, y+1, op.val.n);
-    else if (dir == sudeste)  return atacar(m, x, y+1, op.val.n);
-    else if (dir == oeste)    return atacar(m, x, y - 1, op.val.n);
-    else if (dir == sudoeste) return atacar(m, x, y-1, op.val.n);
-    else if (dir == noroeste) return atacar(m, x-1, y-1, op.val.n);
+    else if (dir == leste)    return atacar(m, x, y + 1, op.valor);
+    else if (dir == nordeste) return atacar(m, x-1, y+1, op.valor);
+    else if (dir == sudeste)  return atacar(m, x, y+1, op.valor);
+    else if (dir == oeste)    return atacar(m, x, y - 1, op.valor);
+    else if (dir == sudoeste) return atacar(m, x, y-1, op.valor);
+    else if (dir == noroeste) return atacar(m, x-1, y-1, op.valor);
   }
 }
 int main(int ac, char **av) {
@@ -737,7 +738,7 @@ int main(int ac, char **av) {
     {SIS, {MOV, nordeste}},
     {SIS, {MOV, noroeste}},
     {SIS, {MOV, aqui}},
-};
+  };
 
   INSTR programa2[] = {
     {SIS, {MOV, oeste}},
@@ -758,25 +759,25 @@ int main(int ac, char **av) {
   cria_arena();
 
   // jogador 1 com 3 robos no exercito
-  Maquina *maq0 = cria_maquina(programa1);
+  Maquina *maq0 = cria_maquina(p1);
   RegistroMaquina(maq0);
 
-  Maquina *maq1 = cria_maquina(programa1);
+  Maquina *maq1 = cria_maquina(p1);
   RegistroMaquina(maq1);
 
-  Maquina *maq2 = cria_maquina(programa1);
+  Maquina *maq2 = cria_maquina(p1);
   RegistroMaquina(maq2);
 
   InsereExercito();
 
   // jogador 2 com 3 robos no exercito
-  Maquina *maq3 = cria_maquina(programa2);
+  Maquina *maq3 = cria_maquina(p2);
   RegistroMaquina(maq3);
 
-  Maquina *maq4 = cria_maquina(programa2);
+  Maquina *maq4 = cria_maquina(p2);
   RegistroMaquina(maq4);
 
-  Maquina *maq5 = cria_maquina(programa2);
+  Maquina *maq5 = cria_maquina(p2);
   RegistroMaquina(maq5);
 
   InsereExercito();

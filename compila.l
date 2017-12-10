@@ -10,15 +10,30 @@ E [Ee][+-]?{D}+
 
 
 %%
-{D}*[.]?{D}+{E}?	{ yylval.val = atof(yytext); return NUMt; }
+[-]?{D}*[.]?{D}+{E}?	{ yylval.val = atof(yytext); return NUMt; }
 
 ret(urn)?  { return RETt; }
 
-if      { return IF; }
-else    {return ELSE; }
-while	{ return WHILE; }
-func|def { return FUNC; }
-print   { return PRINT; }
+move       { return MOVt; }
+poe        { return POEt; }
+extrai     { return EXTt; }
+ataque     { return ATKt; }
+
+aqui       { return -1; }
+leste      { return 1; }
+nordeste   { return 0; }
+sudeste    { return 2; }
+oeste      { return 4; }
+sudoeste   { return 3; }
+noroeste   { return 5; }
+fraco      { return 0; }
+forte      { return 1; }
+
+if         { return IF; }
+else       { return ELSE; }
+while	   { return WHILE; }
+func|def   { return FUNC; }
+print      { return PRINT; }
 
 
 {L}{H}* { 

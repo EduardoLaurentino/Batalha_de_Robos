@@ -180,14 +180,14 @@ void exec_maquina(Maquina *m, int n) {
       break;
     
   case CALL:
-	  op1.t = NUM;
-	  op1.val.n = ip;
-	  empilha(exec, op1);
-	  ip.val.n = arg.val.n;
-	  continue;
-	case RET:
-	  ip.val.n = desempilha(exec).val.n;
-	  break;
+    op1.t = NUM;
+    op1.val.n = ip;
+    empilha(exec, op1);
+    ip.val.n = arg.val.n;
+    continue;
+  case RET:
+    ip.val.n = desempilha(exec).val.n;
+    break;
 
   case EQ:
     op1 = desempilha(pil);
@@ -257,11 +257,11 @@ void exec_maquina(Maquina *m, int n) {
     break;
     
   case STO:
-	  m->Mem[arg.val.n+m->bp[m->ib]] = desempilha(pil);
-	  break;  
-	case RCL:
-	  empilha(pil,m->Mem[arg.val.n+m->bp[m->ib]]);
-	  break;
+    m->Mem[arg.val.n+m->bp[m->ib]] = desempilha(pil);
+    break;  
+  case RCL:
+    empilha(pil,m->Mem[arg.val.n+m->bp[m->ib]]);
+    break;
 
   case END:
     pil->topo = 0;
@@ -285,20 +285,20 @@ void exec_maquina(Maquina *m, int n) {
     
     switch (arg.val.n) {
       // tipos de arg.val.n: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
-      case(0):
+      case (0):
         op1.val.n = tmp.val.cel.terreno;
         // armazena no op1.val.n o tipo de terreno presente na celula desempilhada
         break;
-      case(1):
+      case (1):
         op1.val.n = tmp.val.cel.cristais;
         // armazena no op1.val.n a quantidade de cristais presente na celula desempilhada
         break;
-      case(2):
+      case (2):
         op1.val.n = tmp.val.cel.ocupado;
         // armazena no op1.val.n 0: se celula desempilhada estiver desocupada
         // ou 1: se celula desempilhada estiver ocupada
         break;
-      case(3):
+      case (3):
         op1.val.n = tmp.val.cel.base;
         // armazena no op1.val.n: -1, se nao for base
         // 0, se for base do exercito 0
