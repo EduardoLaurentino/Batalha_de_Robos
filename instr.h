@@ -24,12 +24,10 @@ typedef enum {
   RCL,
   END,
   PRN,
-  STL,
-  RCE,
-  ALC,
-  FRE,
   ATR,
   SIS,
+  ENTRY,
+  LEAVE
 } OpCode;
 
 /* Tipos dos operandos */
@@ -59,15 +57,17 @@ typedef struct {
   int cristais;
   int ocupado;
   int base;
-  int x; //x, y = posição da célula na matriz de celulas da arena
+  int x; // x, y = posição da célula na matriz de celulas da arena
   int y;
-  int maquina_no_local; //posicao da maquina no vetor de registros // o mesmo que o atributo "registro" da maquina
+
+  // posicao da maquina no vetor de registros
+  // o mesmo que o atributo "registro" da maquina
+  int maquina_no_local;
 } Celula;
 
 /* Operando */
 typedef struct {
   Tipo t;
-  int valor;
   union {
     int n;
     int ac;

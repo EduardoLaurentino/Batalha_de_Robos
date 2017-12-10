@@ -29,10 +29,10 @@ char *CODES[] = {
   "RCL",
   "END",
   "PRN",
-  "STL",
-  "RCE",
   "ATR",
   "SIS",
+  "ENTRY",
+  "LEAVE"
 };
 
 #else
@@ -52,12 +52,15 @@ Maquina *cria_maquina(INSTR *p) {
   Maquina *m = (Maquina*)malloc(sizeof(Maquina));
   if (!m) Fatal("Memória insuficiente",4);
 
-  m->ip.valor = 0;
-  m->rbp.valor = 0; //novo registrador
+  m->ip.val.n = 0;
   m->prog = p;
-  m->energia = 1000;
+  m->pil.topo = 0;
+  m->ib = 0;
+
   m->exec = cria_pilha();
   m->pil = cria_pilha();
+
+  m->energia = 1000;
   m->saude = 1000;
   m->arma[0] = 30;
   m->arma[1] = 50;
@@ -71,9 +74,23 @@ void destroi_maquina(Maquina *m) {
   free(m);
 }
 
+int new_frame(Maquina *m, int n) {
+  int ibc = m->ib;
+  if (ibc < MAXFRM-1) {
+    m->bp[++m->ib] = n+ibc;
+    return m->ib;
+  }
+  return -1;
+}
+
+int del_frame(Maquina *m) {
+  if (m->ib > 0) return --m->ib;
+  return -1;
+}
+
+
 /* Alguns macros para facilitar a leitura do código */
 #define ip (m->ip)
-#define rbp (m->rbp) //novo registrador
 #define pil (m->pil)
 #define exec (m->exec)
 #define prg (m->prog)
@@ -83,14 +100,14 @@ void exec_maquina(Maquina *m, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
-    OpCode   opc = prg[ip.valor].instr;
-    OPERANDO arg = prg[ip.valor].op;
+    OpCode   opc = prg[ip.val.n].instr;
+    OPERANDO arg = prg[ip.val.n].op;
 
     OPERANDO tmp;
     OPERANDO op1;
     OPERANDO op2;
 
-    D(printf("%3d: %-4.4s %d\n     ", ip, CODES[opc], arg, arg));
+    D(printf("%3d: %-5.5s %d\n", ip, CODES[opc], arg.val.n));
 
     switch (opc) {
       OPERANDO tmp;
@@ -111,7 +128,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.valor = op1.valor  + op2.valor;
+        tmp.val.n = op1.val.n  + op2.val.n;
         empilha(pil, tmp);
       }
       break;
@@ -121,7 +138,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.valor = op2.valor  - op1.valor;
+        tmp.val.n = op2.val.n  - op1.val.n;
         empilha(pil, tmp);
       }
       break;
@@ -131,7 +148,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.valor = op1.valor  * op2.valor;
+        tmp.val.n = op1.val.n  * op2.val.n;
         empilha(pil, tmp);
       }
       break;
@@ -141,7 +158,7 @@ void exec_maquina(Maquina *m, int n) {
 
       if (op1.t == NUM && op2.t == NUM) {
         tmp.t = NUM;
-        tmp.valor = op2.valor  / op1.valor;
+        tmp.val.n = op2.val.n  / op1.val.n;
         empilha(pil, tmp);
       }
       break;
@@ -150,62 +167,60 @@ void exec_maquina(Maquina *m, int n) {
       ip = arg;
       continue;
     case JIT:
-      if (desempilha(pil).valor != 0) {
+      if (desempilha(pil).val.n != 0) {
         ip = arg;
         continue;
       }
       break;
     case JIF:
-      if (desempilha(pil).valor == 0) {
+      if (desempilha(pil).val.n == 0) {
         ip = arg;
         continue;
       }
       break;
-
+    
   case CALL:
-    empilha(exec, ip);
-    empilha(exec, rbp);
-    rbp.valor = topo;
-    ip.valor = arg.valor;
-    continue;
-  case RET:
-    topo = rbp.valor;
-    rbp = desempilha(exec);
-    ip = desempilha(exec);
-    break;
+	  op1.t = NUM;
+	  op1.val.n = ip;
+	  empilha(exec, op1);
+	  ip.val.n = arg.val.n;
+	  continue;
+	case RET:
+	  ip.val.n = desempilha(exec).val.n;
+	  break;
 
   case EQ:
     op1 = desempilha(pil);
-      op2 = desempilha(pil);
+    op2 = desempilha(pil);
 
-      if (op1.t == NUM && op2.t == NUM) {
-          tmp.t = NUM;
-          if (op1.valor == op2.valor) tmp.valor = 1;
-          else tmp.valor = 0;
-            empilha(pil, tmp);
-      }
+    if (op1.t == NUM && op2.t == NUM) {
+      tmp.t = NUM;
+      if (op1.val.n == op2.val.n) tmp.val.n = 1;
+      else tmp.val.n = 0;
+      empilha(pil, tmp);
+    }
     break;
   case GT:
     op1 = desempilha(pil);
-      op2 = desempilha(pil);
+    op2 = desempilha(pil);
 
-      if (op1.t == NUM && op2.t == NUM) {
-          tmp.t = NUM;
-          if (op1.valor < op2.valor) tmp.valor = 1;
-          else tmp.valor = 0;
-            empilha(pil, tmp);
-      }
+    if (op1.t == NUM && op2.t == NUM) {
+      tmp.t = NUM;
+      if (op1.val.n < op2.val.n) tmp.val.n = 1;
+      else tmp.val.n = 0;
+      empilha(pil, tmp);
+    }
     break;
   case GE:
     op1 = desempilha(pil);
-      op2 = desempilha(pil);
+    op2 = desempilha(pil);
 
-      if (op1.t == NUM && op2.t == NUM) {
-          tmp.t = NUM;
-          if (op1.valor <= op2.valor) tmp.valor = 1;
-          else tmp.valor = 0;
-            empilha(pil, tmp);
-      }
+    if (op1.t == NUM && op2.t == NUM) {
+      tmp.t = NUM;
+      if (op1.val.n <= op2.val.n) tmp.val.n = 1;
+      else tmp.val.n = 0;
+      empilha(pil, tmp);
+    }
     break;
   case LT:
     op1 = desempilha(pil);
@@ -213,8 +228,8 @@ void exec_maquina(Maquina *m, int n) {
 
     if (op1.t == NUM && op2.t == NUM) {
       tmp.t = NUM;
-      if (op1.valor > op2.valor) tmp.valor = 1;
-      else tmp.valor = 0;
+      if (op1.val.n > op2.val.n) tmp.val.n = 1;
+      else tmp.val.n = 0;
       empilha(pil, tmp);
     }
     break;
@@ -224,8 +239,8 @@ void exec_maquina(Maquina *m, int n) {
 
     if (op1.t == NUM && op2.t == NUM) {
       tmp.t = NUM;
-      if (op1.valor >= op2.valor) tmp.valor = 1;
-      else tmp.valor = 0;
+      if (op1.val.n >= op2.val.n) tmp.val.n = 1;
+      else tmp.val.n = 0;
       empilha(pil, tmp);
     }
     break;
@@ -235,63 +250,73 @@ void exec_maquina(Maquina *m, int n) {
 
     if (op1.t == NUM && op2.t == NUM) {
       tmp.t = NUM;
-      if (op1.valor != op2.valor) tmp.valor = 1;
-      else tmp.valor = 0;
+      if (op1.val.n != op2.val.n) tmp.val.n = 1;
+      else tmp.val.n = 0;
       empilha(pil, tmp);
     }
     break;
-
+    
   case STO:
-    m->Mem[arg.valor + 6] = desempilha(pil); //o + 6 representa que os 6 primeiros espacos do vetor estarão guardando infos das 6 celulas vizinhas.
-    break;
-  case RCL:
-    empilha(pil,m->Mem[arg.valor + 6]);
-    break;
+	  m->Mem[arg.val.n+m->bp[m->ib]] = desempilha(pil);
+	  break;  
+	case RCL:
+	  empilha(pil,m->Mem[arg.val.n+m->bp[m->ib]]);
+	  break;
+
   case END:
+    pil->topo = 0;
     return;
   case PRN:
-    tmp = desempilha(pil);
-    printf("%d\n", tmp.t);
-    printf("%d\n", tmp.valor);
+    printf("%d\n", desempilha(pil).val.n);
     break;
-
-  case STL:
-      exec->val[arg.valor + rbp.valor - 1] = desempilha(pil); //Corrigido o erro em que STL desempilhava
-      break;                                                  //da memoria. Agora desempilha da exec.
-  case RCE:
-      empilha(pil, exec->val[arg.valor + rbp.valor - 1]);    //Corrigido o erro em que RCE empilhava
-      break;                                                 //na memoria. Agora empilha na exec.
-
-  case ALC:
-    topo = topo + arg.valor; //Aloca "arg" espaços na exec. (Implementado na Fase2)
-    break;
-  case FRE:
-    topo = topo - arg.valor; //Desaloca "arg" espaços na exec. (Implementado na Fase2)
+  case ENTRY:
+    new_frame(m, arg.val.n);
+    break;	  
+  case LEAVE:
+    del_frame(m);
     break;
 
   case ATR:
-    tmp = desempilha(pil); //desempilha a celula que esta no topo da pilha de dados. (estamos assumindo que é uma celula que estará no topo da pil)
-    op1.t = tmp.t;         //Atribui o tipo do operando1 o mesmo do operando que foi desempilhado
-    switch(arg.valor){     //tipos de arg.valor: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
+    // desempilha a celula que esta no topo da pilha de dados
+    // (estamos assumindo que é uma celula que estará no topo da pil)
+    tmp = desempilha(pil); 
+    op1.t = tmp.t;
+    // atribui ao tipo do operando1 o mesmo do operando que foi desempilhado
+    
+    switch (arg.val.n) {
+      // tipos de arg.val.n: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
       case(0):
-        op1.valor = tmp.val.cel.terreno;  // armazena no op1.valor o tipo de terreno presente na celula desempilhada
+        op1.val.n = tmp.val.cel.terreno;
+        // armazena no op1.val.n o tipo de terreno presente na celula desempilhada
         break;
       case(1):
-        op1.valor = tmp.val.cel.cristais;  // armazena no op1.valor a quantidade de cristais presente na celula desempilhada
+        op1.val.n = tmp.val.cel.cristais;
+        // armazena no op1.val.n a quantidade de cristais presente na celula desempilhada
         break;
       case(2):
-        op1.valor = tmp.val.cel.ocupado;  // armazena no op1.valor 0: se celula desempilhada estiver desocupada ou 1: se celula desempilhada estiver ocupada
+        op1.val.n = tmp.val.cel.ocupado;
+        // armazena no op1.val.n 0: se celula desempilhada estiver desocupada
+        // ou 1: se celula desempilhada estiver ocupada
         break;
       case(3):
-        op1.valor = tmp.val.cel.base;  // armazena no op1.valor: -1, se nao for base/ 0, se for base do exercito 0/ 1, se for base do exercito 1;
+        op1.val.n = tmp.val.cel.base;
+        // armazena no op1.val.n: -1, se nao for base
+        // 0, se for base do exercito 0
+        // 1, se for base do exercito 1
         break;
     }
-    empilha(pil, op1) ; //empilha na pilha de dados o operando op1, cujo atributo requerido está armazenado no "op1.valor"
+    empilha(pil, op1);
+    // empilha na pilha de dados o operando op1,
+    // cujo atributo requerido está armazenado no "op1.val.n"
     break;
 
-  case SIS: //caso de chamada do sistema, que preenche o operando temporário com o tipo de solicitação feita e, no valor, 0 se a operação não deu certo e 1 se foi bem sucedida (ver implementação do sistema em "arena.c")
+
+  // caso de chamada do sistema, que preenche o operando temporário com o tipo
+  // de solicitação feita e, no val.n, 0 se a operação não deu certo e 1 se foi
+  // bem sucedida (ver implementação do sistema em "arena.c")
+  case SIS: 
     tmp.t = arg.t;
-    tmp.valor = Sistema(arg, m);
+    tmp.val.n = Sistema(arg, m);
     empilha(pil, tmp);
     break;
   }
@@ -299,6 +324,6 @@ void exec_maquina(Maquina *m, int n) {
   D(imprime(pil,5));
   D(puts("\n"));
 
-  ip.valor++;
+  ip.val.n++;
   }
 }
