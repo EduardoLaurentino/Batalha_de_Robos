@@ -491,7 +491,7 @@ int retira_energia_extracao_e_por(Maquina *m, Terreno terreno) {
 #define x (m->pos[0])
 #define y (m->pos[1])
 
-#define aqui -1
+#define aqui 6
 #define nordeste 0
 #define leste 1
 #define sudeste 2

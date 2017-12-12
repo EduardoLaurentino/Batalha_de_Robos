@@ -33,7 +33,7 @@ void AddInstr(OpCode op, OPERANDO valor) {
 %token <cod> ID
 %token ADDt SUBt MULt DIVt ASGN OPEN CLOSE RETt EOL
 %token EQt NEt LTt LEt GTt GEt ABRE FECHA SEP
-%token IF /*ELSE*/ WHILE FUNC PRINT
+%token IF ELSE WHILE FUNC PRINT
 
 %token MOVt POEt EXTt ATKt
 
@@ -54,7 +54,7 @@ Programa: Comando
 
 Comando: Expr EOL
        | Cond
-       //???????| Cond Else
+       | Else
        | Loop
        | Func
 	   | PRINT Expr EOL { AddInstr(PRN, {NUM, 0});}
@@ -67,15 +67,11 @@ Comando: Expr EOL
 			     AddInstr(RET, {NUM, 0});
  		      }
  		      
- 	   // NOVOS COMANDOS ~~ESPECÍFICOS~~
-       | MOVt OPEN NUMt CLOSE EOL { AddInstr(SIS, {MOV, $3}); }
-       | POEt OPEN NUMt CLOSE EOL { AddInstr(SIS, {POR, $3}); }
-       | EXTt OPEN NUMt CLOSE EOL { AddInstr(SIS, {EXTR, $3}); }
-       | ATKt OPEN NUMt CLOSE OPEN NUMt CLOSE EOL { AddInstr(SIS, {ATK, $3, $6}); }
-       
-       // FALTA ATR
- 	   // FALTA TRATAMENTO DE ERROS?
- 	   // VARIÁVEIS ESPECIAIS SÃO NA PARTE COMENTADA MAIS ABAIXO? (ID PONTO ETC)
+       // NOVOS COMANDOS ~~ESPECÍFICOS~~
+       | MOVt PONTO NUMt EOL { AddInstr(SIS, {MOV, $3}); }
+       | POEt PONTO NUMt EOL { AddInstr(SIS, {POR, $3}); }
+       | EXTt PONTO NUMt EOL { AddInstr(SIS, {EXTR, $3}); }
+       | ATKt PONTO NUMt PONTO NUMt EOL { AddInstr(SIS, {ATK, $3, $5}); }
        
 	   /* | EOL {printf("--> %d\n", ip);} */
 ;
@@ -91,12 +87,12 @@ Expr: NUMt {  AddInstr(PUSH, {NUM, $1});}
 			 if (s==0) s = putsym($1); /* não definida */
 			 AddInstr(STO, {NUM, s->val});
  		 }
-	/* | ID PONTO NUMt  {  % v.4 */
-	/*          symrec *s = getsym($1); */
-	/* 		 if (s==0) s = putsym($1); /\* não definida *\/ */
-	/* 		 AddInstr(PUSH, s->val); */
-	/* 		 AddInstr(ATR, $3); */
- 	/* 	 } */
+	| ID PONTO NUMt EOL {  % v.4
+	          symrec *s = getsym($1);
+	 		 if (s==0) s = putsym($1); /* não definida */
+	 		 AddInstr(PUSH, s->val);
+	 		 AddInstr(ATR, $3);
+ 	 	 }
 	| Chamada 
     | Expr ADDt Expr { AddInstr(ADD,  {NUM, 0});}
 	| Expr SUBt Expr { AddInstr(SUB,  {NUM, 0});}
@@ -120,9 +116,9 @@ Cond: IF OPEN Expr {
 		   prog[pega_end()].op.val.n = ip;
 		 };
 
-/*????Else: ELSE Bloco {
+Else: ELSE Bloco {
 		 };
-????????*/
+
 
 
 Loop: WHILE OPEN  { salva_end(ip); }

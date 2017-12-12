@@ -10,7 +10,7 @@ E [Ee][+-]?{D}+
 
 
 %%
-[-]?{D}*[.]?{D}+{E}?	{ yylval.val = atof(yytext); return NUMt; }
+{D}*[.]?{D}+{E}?	{ yylval.val = atof(yytext); return NUMt; }
 
 ret(urn)?  { return RETt; }
 
@@ -19,7 +19,7 @@ poe        { return POEt; }
 extrai     { return EXTt; }
 ataque     { return ATKt; }
 
-aqui       { return -1; }
+aqui       { return 6; }
 leste      { return 1; }
 nordeste   { return 0; }
 sudeste    { return 2; }
@@ -28,6 +28,11 @@ sudoeste   { return 3; }
 noroeste   { return 5; }
 fraco      { return 0; }
 forte      { return 1; }
+
+terreno    { return 0; }
+cristais   { return 1; }
+ocupado    { return 2; }
+base       { return 3; }
 
 if         { return IF; }
 else       { return ELSE; }
@@ -45,6 +50,7 @@ print      { return PRINT; }
 
 #.*		/* comentarios simples */
 
+[.]             { return PONTO; }
 ;		{ return EOL; }
 ,		{ return SEP; }
 =		{ return ASGN; }

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "compila.tab.h" //ok
+#include "compila.tab.h"
 #include "maq.h"
 
 INSTR p1[2000];
