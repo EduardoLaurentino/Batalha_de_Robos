@@ -1,0 +1,22 @@
+while (celula.sudeste.terreno == 1) {
+  move.sudeste;
+}
+while (celula.sudeste.terreno == 1) {
+  move.leste;
+}
+while (celula.sudeste.terreno == 1) {
+  move.sudoeste;
+}
+while (celula.sudeste.terreno == 1) {
+  move.oeste;
+}
+while (celula.sudeste.terreno == 1) {
+  move.noroeste;
+}
+while (celula.sudeste.terreno == 1) {
+  move.nordeste;
+}
+
+
+
+
