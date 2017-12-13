@@ -193,6 +193,11 @@ OPERANDO reconheceVizinhaca(Maquina* m, int j) {
       temp.val.cel = celulas[m->pos[0] + 1][m->pos[1] - 1];
       return temp;
       break;
+    case 6: //Aqui
+      temp.t = CELULA;
+      temp.val.cel = celulas[m->pos[0]][m->pos[1]];
+      return temp;
+      break;
   }
 }
 
@@ -249,7 +254,7 @@ void InsereExercito() {
     celulas[exercitos[topo_ex].pos_celula_base[0]+i+1]
         [exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = (topo_ex*3)+i;
 
-    for (j = 0; j < 6; j++) {
+    for (j = 0; j < 7; j++) {
       registros[exercitos[topo_ex].robos[i]]->Mem[j]
           = reconheceVizinhaca(registros[exercitos[topo_ex].robos[i]], j);
     }
@@ -546,6 +551,10 @@ int movimentacao(Maquina *m, int i, int j) {
         // Demora 2 turnos para se movimentar caso o terreno seja do tipo MONTANHA
         break;
     }
+    for (j = 0; j < 7; j++) {
+      registros[exercitos[topo_ex].robos[i]]->Mem[j]
+          = reconheceVizinhaca(registros[exercitos[topo_ex].robos[i]], j);
+    }
     return 1;
   }
   else return 0;
@@ -725,31 +734,18 @@ int Sistema(OPERANDO op, Maquina *m){
     else if (dir == noroeste) return atacar(m, x-1, y-1);
   }
 }
-/*int main(int ac, char **av) {
+
+/*
+INSTR programa1[2000];
+INSTR programa2[2000];
+
+int compilador(FILE *, INSTR *);
+
+int main(int ac, char **av) {
 
   display = popen("./apres", "w");
 
-  INSTR programa1[] = {
-    {SIS, {MOV, leste}},
-    {SIS, {MOV, leste}},
-    {SIS, {MOV, nordeste}},
-    {SIS, {MOV, leste}},
-    {SIS, {MOV, leste}},
-    {SIS, {MOV, nordeste}},
-    {SIS, {MOV, noroeste}},
-    {SIS, {MOV, aqui}},
-  };
 
-  INSTR programa2[] = {
-    {SIS, {MOV, oeste}},
-    {SIS, {MOV, oeste}},
-    {SIS, {MOV, sudeste}},
-    {SIS, {MOV, sudeste}},
-    {SIS, {MOV, leste}},
-    {SIS, {MOV, sudoeste}},
-    {SIS, {MOV, leste}},
-    {SIS, {MOV, aqui}},
-  };
 
   if (display == NULL) {
     fprintf(stderr,"Não encontrei o programa de exibição\n");
