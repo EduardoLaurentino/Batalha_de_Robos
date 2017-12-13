@@ -36,7 +36,7 @@ void AddInstr(OpCode op, OPERANDO valor) {
 %token <cod> ID
 %token ADDt SUBt MULt DIVt ASGN OPEN CLOSE RETt EOL
 %token EQt NEt LTt LEt GTt GEt ABRE FECHA SEP
-%token IF ELSE WHILE FUNC PRINT PONTO
+%token IF ELSE WHILE FUNC PRINT PONTO CEL
 
 %token MOVt POEt EXTt ATKt
 
@@ -93,14 +93,12 @@ Expr: NUMt {  tmp.t = NUM; tmp.val.n = $1; AddInstr(PUSH, tmp);}
              tmp.t = NUM; tmp.val.n = s->val;
 			 AddInstr(STO, tmp);
  		 }
-	/*| ID PONTO NUMt {  % v.4 */
-	/*         symrec *s = getsym($1); */
-	/* 		 if (s==0) s = putsym($1); /* não definida */
-    /*         tmp.t = NUM; tmp.val.n = 0;*/
-	/* 		 AddInstr(PUSH, tmp);*/
-    /*         tmp.t = NUM; tmp.val.n = $3;*/
-	/* 		 AddInstr(ATR, tmp);*/
- 	/* 	 }*/
+	 | CEL PONTO NUMt PONTO NUMt {
+	                 tmp.t = NUM; tmp.val.n = $3;
+	 		 AddInstr(PUSH,tmp);
+	                 tmp.t = NUM; tmp.val.n = $5;
+	 		 AddInstr(ATR, tmp);
+        	 }
 	| Chamada
     | Expr ADDt Expr { tmp.t = NUM; tmp.val.n = 0; AddInstr(ADD, tmp);}
 	| Expr SUBt Expr { tmp.t = NUM; tmp.val.n = 0; AddInstr(SUB, tmp);}

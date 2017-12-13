@@ -27,6 +27,7 @@ oeste      { return 4; }
 sudoeste   { return 3; }
 noroeste   { return 5; }
 
+celula     { CEL; }
 terreno    { return 0; }
 cristais   { return 1; }
 ocupado    { return 2; }
@@ -49,7 +50,7 @@ print      { return PRINT; }
 
 #.*		/* comentarios simples */
 
-[.]             { return PONTO; }
+[.]     { return PONTO; }
 ;		{ return EOL; }
 ,		{ return SEP; }
 =		{ return ASGN; }

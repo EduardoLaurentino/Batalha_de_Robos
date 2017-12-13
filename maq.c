@@ -288,20 +288,20 @@ void exec_maquina(Maquina *m, int n) {
     switch (arg.val.n) {
       // tipos de arg.val.n: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
       case (0):
-        op1.val.n = tmp.val.cel.terreno;
+        op1.val.n = m->Mem[tmp.val.n].terreno;
         // armazena no op1.val.n o tipo de terreno presente na celula desempilhada
         break;
       case (1):
-        op1.val.n = tmp.val.cel.cristais;
+        op1.val.n =  m->Mem[tmp.val.n].cristais;
         // armazena no op1.val.n a quantidade de cristais presente na celula desempilhada
         break;
       case (2):
-        op1.val.n = tmp.val.cel.ocupado;
+        op1.val.n =  m->Mem[tmp.val.n].ocupado;
         // armazena no op1.val.n 0: se celula desempilhada estiver desocupada
         // ou 1: se celula desempilhada estiver ocupada
         break;
       case (3):
-        op1.val.n = tmp.val.cel.base;
+        op1.val.n =  m->Mem[tmp.val.n].base;
         // armazena no op1.val.n: -1, se nao for base
         // 0, se for base do exercito 0
         // 1, se for base do exercito 1
