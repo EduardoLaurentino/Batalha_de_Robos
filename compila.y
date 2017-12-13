@@ -116,25 +116,39 @@ Expr: NUMt {  tmp.t = NUM; tmp.val.n = $1; AddInstr(PUSH, tmp);}
 	| Expr NEt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(NE, tmp);}
 ;
 
-If:   IF OPEN Expr {
+Cond: IF OPEN  Expr {
+               salva_end(ip);
+               tmp.t = NUM; tmp.val.n = ip;
+               AddInstr(JMP, tmp);
+         }
+         CLOSE  Bloco {
+           prog[pega_end()].op.val.n = ip;
+         };
+
+Cond: Cond ELSE {
+           //prog[pega_end()].op.val.n = ip;
+           ip = prog[pega_end()].op.val.n;
+        }
+
+
+/*Cond:   IF OPEN Expr {
   	  	 	   salva_end(ip);
                tmp.t = NUM; tmp.val.n = 0;
                AddInstr(DUP, tmp);
 			   AddInstr(JIF, tmp);
  		 }
 		 CLOSE  Bloco {
-		   prog[pega_end()+1].op.val.n = ip;
+		   prog[pega_end()].op.val.n = ip;
+		 */
 
-		 };
-
-Cond: If
+/*Cond: If
       | If {
          salva_end(ip-1);
          tmp.t = NUM; tmp.val.n = 0;
          AddInstr(JIT, tmp);
       } ELSE Bloco{
         prog[pega_end()+1].op.val.n = ip;
-      }
+      }*/
 
 Loop: WHILE OPEN  { salva_end(ip); }
 	  		Expr  { salva_end(ip); tmp.t = NUM; tmp.val.n = 0; AddInstr(JIF, tmp); }

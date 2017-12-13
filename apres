@@ -97,8 +97,6 @@ class cell:
         if (cristais > 0 and base != -1):
             s.contorno = (243, 123, 173)
 
-
-
         # Vértices do hexágono
         s.pontos = (
             (s.cx,   s.cy-L),
