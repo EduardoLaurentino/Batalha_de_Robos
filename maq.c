@@ -52,20 +52,20 @@ Maquina *cria_maquina(INSTR *p) {
   Maquina *m = (Maquina*)malloc(sizeof(Maquina));
   if (!m) Fatal("Memória insuficiente",4);
 
-  m->ip.val.n = 0;
+  m->ip = 0;
   m->prog = p;
   m->pil.topo = 0;
   m->ib = 0;
 
-  m->exec = cria_pilha();
-  m->pil = cria_pilha();
+  //m->exec = cria_pilha();
+  //m->pil = cria_pilha();
 
   m->energia = 1000;
   m->saude = 1000;
-  m->arma[0] = 30;
-  m->arma[1] = 50;
-  m->arma[2] = 80;
-  m->arma[3] = 140;
+  //m->arma[0] = 30;
+  //m->arma[1] = 50;
+  //m->arma[2] = 80;
+  //m->arma[3] = 140;
   m->isCiclo = 0;
   return m;
 }
@@ -91,17 +91,18 @@ int del_frame(Maquina *m) {
 
 /* Alguns macros para facilitar a leitura do código */
 #define ip (m->ip)
-#define pil (m->pil)
-#define exec (m->exec)
+#define pil (&m->pil)
+#define exec (&m->exec)
 #define prg (m->prog)
-#define topo (exec->topo) // topo da pilha de execução
+#define topo2 (pil->topo)
+//#define topo (exec->topo) // topo da pilha de execução
 
 void exec_maquina(Maquina *m, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
-    OpCode   opc = prg[ip.val.n].instr;
-    OPERANDO arg = prg[ip.val.n].op;
+    OpCode   opc = prg[ip].instr;
+    OPERANDO arg = prg[ip].op;
 
     OPERANDO tmp;
     OPERANDO op1;
@@ -164,29 +165,30 @@ void exec_maquina(Maquina *m, int n) {
       break;
 
     case JMP:
-      ip = arg;
+      ip = arg.val.n;
       continue;
     case JIT:
       if (desempilha(pil).val.n != 0) {
-        ip = arg;
+        ip = arg.val.n;
         continue;
       }
       break;
     case JIF:
       if (desempilha(pil).val.n == 0) {
-        ip = arg;
+        ip = arg.val.n;
         continue;
       }
       break;
-    
+
   case CALL:
     op1.t = NUM;
     op1.val.n = ip;
     empilha(exec, op1);
-    ip.val.n = arg.val.n;
+    ip = arg.val.n;
     continue;
+
   case RET:
-    ip.val.n = desempilha(exec).val.n;
+    ip = desempilha(exec).val.n;
     break;
 
   case EQ:
@@ -255,23 +257,23 @@ void exec_maquina(Maquina *m, int n) {
       empilha(pil, tmp);
     }
     break;
-    
+
   case STO:
     m->Mem[arg.val.n+m->bp[m->ib]] = desempilha(pil);
-    break;  
+    break;
   case RCL:
     empilha(pil,m->Mem[arg.val.n+m->bp[m->ib]]);
     break;
 
   case END:
-    pil->topo = 0;
+    topo2 = 0;
     return;
   case PRN:
     printf("%d\n", desempilha(pil).val.n);
     break;
   case ENTRY:
     new_frame(m, arg.val.n);
-    break;	  
+    break;
   case LEAVE:
     del_frame(m);
     break;
@@ -279,10 +281,10 @@ void exec_maquina(Maquina *m, int n) {
   case ATR:
     // desempilha a celula que esta no topo da pilha de dados
     // (estamos assumindo que é uma celula que estará no topo da pil)
-    tmp = desempilha(pil); 
+    tmp = desempilha(pil);
     op1.t = tmp.t;
     // atribui ao tipo do operando1 o mesmo do operando que foi desempilhado
-    
+
     switch (arg.val.n) {
       // tipos de arg.val.n: 0 = terreno, 1 = cristais, 2 = ocupado, 3 = base
       case (0):
@@ -314,7 +316,7 @@ void exec_maquina(Maquina *m, int n) {
   // caso de chamada do sistema, que preenche o operando temporário com o tipo
   // de solicitação feita e, no val.n, 0 se a operação não deu certo e 1 se foi
   // bem sucedida (ver implementação do sistema em "arena.c")
-  case SIS: 
+  case SIS:
     tmp.t = arg.t;
     tmp.val.n = Sistema(arg, m);
     empilha(pil, tmp);
@@ -324,6 +326,6 @@ void exec_maquina(Maquina *m, int n) {
   D(imprime(pil,5));
   D(puts("\n"));
 
-  ip.val.n++;
+  ip++;
   }
 }

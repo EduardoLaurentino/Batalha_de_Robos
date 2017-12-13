@@ -54,5 +54,5 @@ int extracao(Maquina *m, int i, int j);
 
 int poe_cristal(Maquina *m, int i, int j);
 
-int atacar(Maquina *m, int i, int j, int n);
+int atacar(Maquina *m, int i, int j);
 

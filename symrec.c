@@ -20,7 +20,7 @@ symrec *putsym (char *sym_name)
   symrec *table = SymStack[topss].syms;
 
   ptr = (symrec *) malloc (sizeof (symrec));
-  
+
   ptr->name = (char *) malloc (strlen (sym_name) + 1);
   strcpy (ptr->name,sym_name);
 
@@ -38,7 +38,7 @@ static symrec *getsym_i(int t, char *sym_name) {
 
   for (ptr = table; ptr != (symrec *) 0;
 	   ptr = (symrec *)ptr->next)
-	if (strcmp (ptr->name,sym_name) == 0) 
+	if (strcmp (ptr->name,sym_name) == 0)
 	  return ptr;
 
   return 0;
@@ -53,7 +53,8 @@ symrec *getsymcur(char *sym_name) {
 symrec *getsym(char *sym_name)
 {
   symrec *ptr;
-  for (int t = topss; t >= 0; t--)
+  int t;
+  for (t = topss; t >= 0; t--)
 	if ((ptr = getsym_i(t, sym_name)) != NULL)
 	  return ptr;
   return 0;

@@ -15,9 +15,9 @@ int main(int ac, char **av) {
 
   res = compilador(p, p1);
   if (res) return 1;
-  
+
   Maquina *maq = cria_maquina(p1);
-  exec_maquina(maq, 1000);
+  exec_maquina(maq, 30);
   destroi_maquina(maq);
   return 0;
 }

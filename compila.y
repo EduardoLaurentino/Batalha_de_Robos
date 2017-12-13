@@ -6,7 +6,7 @@
 #include "symrec.h"
 #include "acertos.h"
 #include "instr.h"
-  
+
 int yylex();
 void yyerror(char const *);
 int compila(FILE *, INSTR *);
@@ -15,8 +15,11 @@ static int mem = 6;					/* ponteiro da memória */
 static INSTR *prog;
 static int parmcnt = 0;		/* contador de parâmetros */
 
+OPERANDO tmp;
+//int cont = 0;
+
 void AddInstr(OpCode op, OPERANDO valor) {
-  prog[ip++] = (INSTR) {op,  {valor.t, {valor.val}}};
+  prog[ip++] = (INSTR) {op,  {valor.t, {valor.val.n}}};
 }
 %}
 
@@ -33,7 +36,7 @@ void AddInstr(OpCode op, OPERANDO valor) {
 %token <cod> ID
 %token ADDt SUBt MULt DIVt ASGN OPEN CLOSE RETt EOL
 %token EQt NEt LTt LEt GTt GEt ABRE FECHA SEP
-%token IF ELSE WHILE FUNC PRINT
+%token IF ELSE WHILE FUNC PRINT PONTO
 
 %token MOVt POEt EXTt ATKt
 
@@ -54,91 +57,103 @@ Programa: Comando
 
 Comando: Expr EOL
        | Cond
-       | Else
        | Loop
        | Func
-	   | PRINT Expr EOL { AddInstr(PRN, {NUM, 0});}
+	   | PRINT Expr EOL { tmp.t = NUM; tmp.val.n = 0; AddInstr(PRN, tmp);}
        | RETt EOL {
-		 	     AddInstr(LEAVE, {NUM, 0});
-			     AddInstr(RET, {NUM, 0});
+                 tmp.t = NUM; tmp.val.n = 0;
+		 	     AddInstr(LEAVE, tmp);
+			     AddInstr(RET, tmp);
  			  }
        | RETt OPEN Expr CLOSE EOL {
-		 	     AddInstr(LEAVE, {NUM, 0});
-			     AddInstr(RET, {NUM, 0});
+                 tmp.t = NUM; tmp.val.n = 0;
+		 	     AddInstr(LEAVE, tmp);
+			     AddInstr(RET, tmp);
  		      }
- 		      
+
        // NOVOS COMANDOS ~~ESPECÍFICOS~~
-       | MOVt PONTO NUMt EOL { AddInstr(SIS, {MOV, $3}); }
-       | POEt PONTO NUMt EOL { AddInstr(SIS, {POR, $3}); }
-       | EXTt PONTO NUMt EOL { AddInstr(SIS, {EXTR, $3}); }
-       | ATKt PONTO NUMt PONTO NUMt EOL { AddInstr(SIS, {ATK, $3, $5}); }
-       
+       | MOVt PONTO NUMt EOL { tmp.t = MOV; tmp.val.n = $3; AddInstr(SIS, tmp); }
+       | POEt PONTO NUMt EOL { tmp.t = POR; tmp.val.n = $3; AddInstr(SIS, tmp); }
+       | EXTt PONTO NUMt EOL { tmp.t = EXTR; tmp.val.n = $3; AddInstr(SIS, tmp); }
+       | ATKt PONTO NUMt EOL { tmp.t = ATK; tmp.val.n = $3; AddInstr(SIS, tmp); }
+
 	   /* | EOL {printf("--> %d\n", ip);} */
 ;
 
-Expr: NUMt {  AddInstr(PUSH, {NUM, $1});}
+Expr: NUMt {  tmp.t = NUM; tmp.val.n = $1; AddInstr(PUSH, tmp);}
     | ID   {
 	         symrec *s = getsym($1);
 			 if (s==0) s = putsym($1); /* não definida */
-			 AddInstr(RCL, {NUM, s->val});
+             tmp.t = NUM; tmp.val.n = s->val;
+			 AddInstr(RCL, tmp);
 	       }
 	| ID ASGN Expr {
 	         symrec *s = getsym($1);
 			 if (s==0) s = putsym($1); /* não definida */
-			 AddInstr(STO, {NUM, s->val});
+             tmp.t = NUM; tmp.val.n = s->val;
+			 AddInstr(STO, tmp);
  		 }
-	| ID PONTO NUMt EOL {  % v.4
-	          symrec *s = getsym($1);
-	 		 if (s==0) s = putsym($1); /* não definida */
-	 		 AddInstr(PUSH, s->val);
-	 		 AddInstr(ATR, $3);
- 	 	 }
-	| Chamada 
-    | Expr ADDt Expr { AddInstr(ADD,  {NUM, 0});}
-	| Expr SUBt Expr { AddInstr(SUB,  {NUM, 0});}
-	| Expr MULt Expr { AddInstr(MUL,  {NUM, 0});}
-	| Expr DIVt Expr { AddInstr(DIV,  {NUM, 0});}
-    | '-' Expr %prec NEG  { printf("  {CHS,  {NUM, 0}},\n"); }
+	/*| ID PONTO NUMt {  % v.4 */
+	/*         symrec *s = getsym($1); */
+	/* 		 if (s==0) s = putsym($1); /* não definida */
+    /*         tmp.t = NUM; tmp.val.n = 0;*/
+	/* 		 AddInstr(PUSH, tmp);*/
+    /*         tmp.t = NUM; tmp.val.n = $3;*/
+	/* 		 AddInstr(ATR, tmp);*/
+ 	/* 	 }*/
+	| Chamada
+    | Expr ADDt Expr { tmp.t = NUM; tmp.val.n = 0; AddInstr(ADD, tmp);}
+	| Expr SUBt Expr { tmp.t = NUM; tmp.val.n = 0; AddInstr(SUB, tmp);}
+	| Expr MULt Expr { tmp.t = NUM; tmp.val.n = 0; AddInstr(MUL, tmp);}
+	| Expr DIVt Expr { tmp.t = NUM; tmp.val.n = 0; AddInstr(DIV, tmp);}
+    | '-' Expr %prec NEG  { printf("  {CHS, 0},\n"); }
 	| OPEN Expr CLOSE
-	| Expr LTt Expr  { AddInstr(LT,   {NUM, 0});}
-	| Expr GTt Expr  { AddInstr(GT,   {NUM, 0});}
-	| Expr LEt Expr  { AddInstr(LE,   {NUM, 0});}
-	| Expr GEt Expr  { AddInstr(GE,   {NUM, 0});}
-	| Expr EQt Expr  { AddInstr(EQ,   {NUM, 0});}
-	| Expr NEt Expr  { AddInstr(NE,   {NUM, 0});}
+	| Expr LTt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(LT, tmp);}
+	| Expr GTt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(GT, tmp);}
+	| Expr LEt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(LE, tmp);}
+	| Expr GEt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(GE, tmp);}
+	| Expr EQt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(EQ, tmp);}
+	| Expr NEt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(NE, tmp);}
 ;
 
-Cond: IF OPEN Expr {
+If:   IF OPEN Expr {
   	  	 	   salva_end(ip);
-			   AddInstr(JIF, {NUM, 0});
+               tmp.t = NUM; tmp.val.n = 0;
+               AddInstr(DUP, tmp);
+			   AddInstr(JIF, tmp);
  		 }
 		 CLOSE  Bloco {
-		   prog[pega_end()].op.val.n = ip;
+		   prog[pega_end()+1].op.val.n = ip;
+
 		 };
 
-Else: ELSE Bloco {
-		 };
-
-
+Cond: If
+      | If {
+         salva_end(ip-1);
+         tmp.t = NUM; tmp.val.n = 0;
+         AddInstr(JIT, tmp);
+      } ELSE Bloco{
+        prog[pega_end()+1].op.val.n = ip;
+      }
 
 Loop: WHILE OPEN  { salva_end(ip); }
-	  		Expr  { salva_end(ip); AddInstr(JIF, {NUM, 0}); }
+	  		Expr  { salva_end(ip); tmp.t = NUM; tmp.val.n = 0; AddInstr(JIF, tmp); }
 	  		CLOSE Bloco {
 			  int ip2 = pega_end();
-			  AddInstr(JMP, {NUM, pega_end()});
+			  tmp.t = NUM; tmp.val.n = 0; AddInstr(JMP, tmp);
 			  prog[ip2].op.val.n = ip;
-			}; 
+			};
 
 Bloco: ABRE Comandos FECHA ;
 
-Comandos: Comando 
+Comandos: Comando
     | Comandos Comando
 	;
 
 Func: FUNC ID
 	  {
 		salva_end(ip);
-		AddInstr(JMP, {NUM, 0});
+		tmp.t = NUM; tmp.val.n = 0; AddInstr(JMP, tmp);
 		symrec *s = getsym($2);
 		if (s==0) s = putsym($2);
 		else {
@@ -152,14 +167,14 @@ Func: FUNC ID
 	  }
 	  Args CLOSE  Bloco
 	  {
-		AddInstr(LEAVE, {NUM, 0});
-		AddInstr(RET, {NUM, 0});
+		tmp.t = NUM; tmp.val.n = 0; AddInstr(LEAVE, tmp);
+		tmp.t = NUM; tmp.val.n = 0; AddInstr(RET, tmp);
 		prog[pega_end()].op.val.n = ip;
 		deltab();
 	  }
 	  ;
 
-Args: 
+Args:
 	| ID {
 	  	 putsym($1);
 	  }
@@ -180,11 +195,15 @@ Chamada: ID OPEN
 			 yyerror("Função não definida\n");
 			 YYABORT;
 		   }
-		   AddInstr(ENTRY, {NUM, lastval()});
+           tmp.t = NUM; tmp.val.n = 0;
+		   AddInstr(ENTRY, tmp);
 		   /* Cópia dos parâmetros */
-		   while (parmcnt > 0) 
-			 AddInstr(STO, {NUM, --parmcnt});
-		   AddInstr(CALL, {NUM, s->val});
+		   while (parmcnt > 0){
+             tmp.t = NUM; tmp.val.n = --parmcnt;
+			 AddInstr(STO, tmp);
+           }
+           tmp.t = NUM; tmp.val.n = s->val;
+		   AddInstr(CALL, tmp);
 		 }
 	  	 CLOSE ;
 
@@ -198,7 +217,7 @@ ListParms:
 extern FILE *yyin;
 
 void yyerror(char const *msg) {
-  fprintf(stderr,"ERRO: %s",msg);
+  fprintf(stderr,"ERRO na linha %d: %s", yylineno(), msg);
 }
 
 int compilador(FILE *cod, INSTR *dest) {
@@ -208,6 +227,7 @@ int compilador(FILE *cod, INSTR *dest) {
   cleartab();
   ip = 0;
   r = yyparse();
-  AddInstr(END, {NUM, 0});
+  tmp.t = NUM; tmp.val.n = 0;
+  AddInstr(END, tmp);
   return r;
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "arena.h"
-#include "compila.tab.h"
+//#include "compila.tab.h"
 
 FILE *display;
 
@@ -30,14 +30,14 @@ void cria_arena() {
   for (i = 0; i < 15; i++) {
     // aloca um vetor de Celulas para cada posição do vetor de ponteiros
     a->celulas[i] = (Celula*) malloc(15 * sizeof(Celula));
-    
+
       // percorre o vetor de Celulas atual,
       // determinando caracteristicas de cada uma
       for (j = 0; j < 15; j++) {
         a->celulas[i][j].x = i;
         a->celulas[i][j].y = j;
         a->celulas[i][j].ocupado = 0; // ocupado = 0 significa sem ocupacao
-        
+
         a->celulas[i][j].base = -1;
         // base = -1 significa sem base;
         // base = 0 time = 0;
@@ -193,7 +193,7 @@ OPERANDO reconheceVizinhaca(Maquina* m, int j) {
       temp.val.cel = celulas[m->pos[0] + 1][m->pos[1] - 1];
       return temp;
       break;
-  }  
+  }
 }
 
 // insere o novo exercito e cria uma base para ele
@@ -237,7 +237,7 @@ void InsereExercito() {
     // coloca na maquina qual a posicao dela na arena
     registros[exercitos[topo_ex].robos[i]]->pos[0]
         = exercitos[topo_ex].pos_celula_base[0]+i+1;
-        
+
     registros[exercitos[topo_ex].robos[i]]->pos[1]
         = exercitos[topo_ex].pos_celula_base[1];
 
@@ -248,7 +248,7 @@ void InsereExercito() {
     // coloca na celula a info da maquina que esta ocupando o local
     celulas[exercitos[topo_ex].pos_celula_base[0]+i+1]
         [exercitos[topo_ex].pos_celula_base[1]].maquina_no_local = (topo_ex*3)+i;
-        
+
     for (j = 0; j < 6; j++) {
       registros[exercitos[topo_ex].robos[i]]->Mem[j]
           = reconheceVizinhaca(registros[exercitos[topo_ex].robos[i]], j);
@@ -294,7 +294,7 @@ void RemoveExercito(int num_ex) {
 
   int xbase = exercitos[num_ex].pos_celula_base[0];
   int ybase = exercitos[num_ex].pos_celula_base[1];
-  
+
   // redesenha celula sem a cor/base
   fprintf(display, "cel %d %d %d %d %d\n",
       xbase, ybase, celulas[xbase][ybase].terreno,
@@ -308,7 +308,7 @@ void RemoveExercito(int num_ex) {
 
     int x = registros[exercitos[num_ex].robos[i]]->pos[0];
     int y = registros[exercitos[num_ex].robos[i]]->pos[1];
-    
+
     // redesenha celula sem o robo
     fprintf(display, "cel %d %d %d %d %d\n", x, y,
         celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
@@ -328,34 +328,34 @@ int verifica_exercito_ativo(Exercito exerc) {
   // coordenada X da base do exercito em questao
   int XcoordBaseExerc = exerc.pos_celula_base[0];
   // coordenada Y da base do exercito em questao
-  int YcoordBaseExerc = exerc.pos_celula_base[1]; 
-  
+  int YcoordBaseExerc = exerc.pos_celula_base[1];
+
   // Se a base do exercito em questao tiver 5 cristais, jogo acaba
-  if (celulas[XcoordBaseExerc][YcoordBaseExerc].cristais >= 5) return 0; 
+  if (celulas[XcoordBaseExerc][YcoordBaseExerc].cristais >= 5) return 0;
   int i;
   int cont;
-  
+
   // varredura de todos os robos ate encontrar pelo menos 1 com saude > 0
   for (i = 0; i < 3; i++) {
     int x = registros[exerc.robos[i]]->pos[0];
     int y = registros[exerc.robos[i]]->pos[1];
-                   
+
     if (registros[exerc.robos[i]]->saude > 0) cont = 1;
     else {
       // a celula em que o robo morreu se torna desocupada (desocupado=0)
-      celulas[x][y].ocupado = 0; 
-      
+      celulas[x][y].ocupado = 0;
+
       //envia info da celula para ser redesenhada sem o robo
       fprintf(display, "cel %d %d %d %d %d\n", x, y,
           celulas[x][y].terreno, celulas[x][y].cristais, celulas[x][y].base);
       fflush(display);
     }
   }
-  
+
   // caso haja 1 robo vivo, return 1 = "ativo"
   if (cont == 1) return 1;
-  // caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo"                 
-  else return 0;                              
+  // caso nao haja nenhum robo com vida (energia = 0), retornar 0 = "inativo"
+  else return 0;
 }
 
 
@@ -364,30 +364,30 @@ int verifica_continuidade() {
   int i;
   int quant = 0;
   int exerc_vencedor = -1;
-  
+
   for (i = 0; i < 2; i++) { // dois exercitos apenas
     // verificar se existem exercitos ativos
     exercitos[i].ativo = verifica_exercito_ativo(exercitos[i]);
     // guarda o numero do exercito que ta ativo.
     if (exercitos[i].ativo == 1) { quant++; exerc_vencedor = i; }
   }
-  
+
   // se os dois exercitos estao ativos, o jogo continua(retorna -1)
   if (quant == 2) return -1;
   // caso haja apenas 1, retorna o numero do unico exercito ativo (vencedor)
-  else return exerc_vencedor;                                     
+  else return exerc_vencedor;
 }
 
 
 void escalonador(int quant_rod) {
   int i, j;
   int verifica_cont;
-   
+
   for (i = 0; i < quant_rod; i++) {
     // funcao "verifica_continuidade()" retorna -1: caso o jogo continue;
     // 0: caso exerc 0 vença e 1: caso o exerc 1 vença.
     verifica_cont = verifica_continuidade();
-    
+
     if (verifica_cont < 0) {
       //faz todas os robos executarem 10 instruções por rodadas
       for (j = 0; j < 6; j++) {
@@ -399,7 +399,7 @@ void escalonador(int quant_rod) {
       //Printa o exercito vencedor.
       printf("Vencedor: Exército %d\n",verifica_cont);
       //Jogo acaba.
-      break;                                                   
+      break;
     }
   }
 }
@@ -414,7 +414,7 @@ int verifica_ocupacao(int x, int y) {
 
 int celula_existe(int x, int y) {
   // indisponibilidade ~= não atacavel, não pode atacar e nao perde energia
-  if (x < 0 || y < 0 || x >= 15 || y >= 15) return 0; 
+  if (x < 0 || y < 0 || x >= 15 || y >= 15) return 0;
   else return 1;
 }
 
@@ -504,7 +504,7 @@ int movimentacao(Maquina *m, int i, int j) {
   // e se o robo tem energia para ir, já subtraindo energia caso sim
   if (verifica_ocupacao(i, j) == 0 &&
     retira_energia_movimento(m, celulas[i][j].terreno) == 1) {
-    
+
     // muda o status da celula onde tava para desocupada
     celulas[m->pos[0]][m->pos[1]].ocupado = 0;
 
@@ -558,13 +558,13 @@ int extracao(Maquina *m, int i, int j) {
   if (verifica_ocupacao(i, j) == 0 &&
       retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1
       && celulas[i][j].cristais > 0 && m->cristais < 3) {
-      
+
     celulas[i][j].cristais -= 1;
     m->cristais += 1;
     // perda de energia maior por fazer extração em célula vizinha (fazer extração
     // em céula vizinha ao invés de onde se está tem custo energético maior)
-    m->energia -= 20; 
-    
+    m->energia -= 20;
+
     switch (celulas[i][j].terreno) {
       case AGUA:
         // Consegue retirar cristal no seu proprio turno,
@@ -605,7 +605,7 @@ int por_cristal(Maquina *m, int i, int j) {
   if (verifica_ocupacao(i, j) == 0 &&
       retira_energia_extracao_e_por(m, celulas[i][j].terreno) == 1
       && m->cristais > 0) {
-      
+
     celulas[i][j].cristais += 1;
     m->cristais -= 1;
     m->energia -= 20;
@@ -616,29 +616,29 @@ int por_cristal(Maquina *m, int i, int j) {
   else return 0;
 }
 
-int atacar(Maquina *m, int i, int j, int n) {
-  int perde; 
+int atacar(Maquina *m, int i, int j) {
+  int perde;
   // caso nao esteja em um ciclo e escolher a arma tipo 1 (a mais forte),
   // ele fica ocupado por 1 turno.
   // se a arma(n) for a do tipo 1, o oponente perde 'arma[3]' de saude.
-  if (n == 1) { m->isCiclo = 1; perde = 3; }
-  
+  //if (n == 1) { m->isCiclo = 1; perde = 3; }
+
   // se a arma(n) for a do tipo 0, o oponente perde 'arma[1]' de saude
-  if (n == 0) perde = 1; 
-  
-  if (celula_existe(i, j) == 1 && m->energia >= arma[perde - 1]) {
+  //if (n == 0) perde = 1;
+
+  if (celula_existe(i, j) == 1 && m->energia >= 50) {
     // tem robo pra ser atacado
-    if (celulas[i][j].ocupado == 1) { 
+    if (celulas[i][j].ocupado == 1) {
       // retira energia do robo atacado
-      registros[celulas[i][j].maquina_no_local]->saude -= arma[perde];
+      registros[celulas[i][j].maquina_no_local]->saude -= 80;
       // perde energia por atacar com sucesso
-      m->energia -= arma[perde - 1];
+      m->energia -= 50;
       return 1;
     }
     else {
       // perde energia simplesmente por atacar,
       // pra impedir que fique atacando descriteriosamente
-      m->energia -= arma[perde - 1]; 
+      m->energia -= 50;
       return 0; // não atacou
     }
   }
@@ -654,10 +654,10 @@ int Sistema(OPERANDO op, Maquina *m){
       // aumenta a energia e retorna o sucesso do procedimento
       // só pode aumentar energia se ainda estiver vivo (energia > 0)
       if (m->energia < 800 && m->energia > 0) { m->energia += 20; return 1; }
-        
+
       // se não conseguir aumentar energia
       //uma vez que ficou com menos de 1000, nao pode voltar a ter 1000
-      return 0; 
+      return 0;
     }
     else if (dir == leste)    return movimentacao(m, x, y + 1);
     else if (dir == nordeste) return movimentacao(m, x-1, y+1);
@@ -673,7 +673,7 @@ int Sistema(OPERANDO op, Maquina *m){
       // mas só vai conseguir se tiver cristais disponiveis
       if (retira_energia_extracao_e_por(m, celulas[x][y].terreno)
           == 1 && celulas[x][y].cristais > 0) {
-      
+
         celulas[x][y].cristais -= 1;
         m->cristais += 1;
         return 1;
@@ -694,7 +694,7 @@ int Sistema(OPERANDO op, Maquina *m){
       // mas perde energia só de tentar
       if (retira_energia_extracao_e_por(m, celulas[x][y].terreno)
           == 1 && m->cristais > 0) {
-              
+
         celulas[x][y].cristais += 1;
         m->cristais -= 1;
         return 1;
@@ -717,15 +717,15 @@ int Sistema(OPERANDO op, Maquina *m){
       }
       else return 0; // sem energia suficiente
     }
-    else if (dir == leste)    return atacar(m, x, y + 1, op.valor);
-    else if (dir == nordeste) return atacar(m, x-1, y+1, op.valor);
-    else if (dir == sudeste)  return atacar(m, x, y+1, op.valor);
-    else if (dir == oeste)    return atacar(m, x, y - 1, op.valor);
-    else if (dir == sudoeste) return atacar(m, x, y-1, op.valor);
-    else if (dir == noroeste) return atacar(m, x-1, y-1, op.valor);
+    else if (dir == leste)    return atacar(m, x, y + 1);
+    else if (dir == nordeste) return atacar(m, x-1, y+1);
+    else if (dir == sudeste)  return atacar(m, x, y+1);
+    else if (dir == oeste)    return atacar(m, x, y - 1);
+    else if (dir == sudoeste) return atacar(m, x, y-1);
+    else if (dir == noroeste) return atacar(m, x-1, y-1);
   }
 }
-int main(int ac, char **av) {
+/*int main(int ac, char **av) {
 
   display = popen("./apres", "w");
 
@@ -759,25 +759,25 @@ int main(int ac, char **av) {
   cria_arena();
 
   // jogador 1 com 3 robos no exercito
-  Maquina *maq0 = cria_maquina(p1);
+  Maquina *maq0 = cria_maquina(programa1);
   RegistroMaquina(maq0);
 
-  Maquina *maq1 = cria_maquina(p1);
+  Maquina *maq1 = cria_maquina(programa1);
   RegistroMaquina(maq1);
 
-  Maquina *maq2 = cria_maquina(p1);
+  Maquina *maq2 = cria_maquina(programa2);
   RegistroMaquina(maq2);
 
   InsereExercito();
 
   // jogador 2 com 3 robos no exercito
-  Maquina *maq3 = cria_maquina(p2);
+  Maquina *maq3 = cria_maquina(programa2);
   RegistroMaquina(maq3);
 
-  Maquina *maq4 = cria_maquina(p2);
+  Maquina *maq4 = cria_maquina(programa2);
   RegistroMaquina(maq4);
 
-  Maquina *maq5 = cria_maquina(p2);
+  Maquina *maq5 = cria_maquina(programa2);
   RegistroMaquina(maq5);
 
   InsereExercito();
@@ -793,4 +793,4 @@ int main(int ac, char **av) {
 
   destroi_arena();
   return 0;
-}
+}*/

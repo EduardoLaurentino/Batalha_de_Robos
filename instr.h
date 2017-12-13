@@ -74,7 +74,7 @@ typedef struct {
     int v;
     Celula cel;
   } val;
-  int valor;
+  //int valor;
 } OPERANDO;
 
 

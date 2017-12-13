@@ -26,8 +26,6 @@ sudeste    { return 2; }
 oeste      { return 4; }
 sudoeste   { return 3; }
 noroeste   { return 5; }
-fraco      { return 0; }
-forte      { return 1; }
 
 terreno    { return 0; }
 cristais   { return 1; }
@@ -41,12 +39,13 @@ func|def   { return FUNC; }
 print      { return PRINT; }
 
 
-{L}{H}* { 
+{L}{H}* {
   strncpy(yylval.cod, yytext, 30);
   return ID;
 }
 
-[ \t\n]+	/* pula espacos em branco */
+[ \t]+	/* pula espacos em branco */
+[ \n] yylineno++;
 
 #.*		/* comentarios simples */
 
