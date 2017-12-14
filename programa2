@@ -1,0 +1,26 @@
+while (celula.sudeste.terreno == 3) {
+  move.sudeste;
+}
+while (celula.sudeste.terreno == 3) {
+  move.leste;
+}
+while (celula.sudeste.terreno == 3) {
+  move.sudoeste;
+}
+
+if (celula.aqui.cristais > 0) {
+  extrai.aqui;
+}
+else {
+  move.nordeste;
+}
+
+while (celula.sudeste.terreno == 3) {
+  move.oeste;
+}
+while (celula.sudeste.terreno == 3) {
+  move.noroeste;
+}
+while (celula.sudeste.terreno == 3) {
+  move.nordeste;
+}

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "arena.h"
-//#include "compila.tab.h"
+#include "compila.tab.h"
 
 FILE *display;
 
@@ -753,6 +753,25 @@ int main(int ac, char **av) {
   }
 
   cria_arena();
+ 
+  FILE *p = stdin;
+  int res;
+  ac--; av++;
+  if (ac>0) p = fopen(*av, "r");
+
+  res = compilador(p, programa1);
+  if (res) return 1;
+
+  fclose(p);
+  av++;
+
+  if (ac>1) p = fopen(*av, "r");
+
+  res= compilador(p, programa2);
+  if (res) return 1;
+
+  fclose(p);
+
 
   // jogador 1 com 3 robos no exercito
   Maquina *maq0 = cria_maquina(programa1);
