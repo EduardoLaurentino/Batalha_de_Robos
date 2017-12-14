@@ -16,7 +16,7 @@ static INSTR *prog;
 static int parmcnt = 0;		/* contador de parâmetros */
 
 OPERANDO tmp;
-//int cont = 0;
+int yylineno; //USAMOS PARA TRATAMENTO DE ERRO; INDICARÁ LINHA DE ERRO NO CÓDIGO
 
 void AddInstr(OpCode op, OPERANDO valor) {
   prog[ip++] = (INSTR) {op,  {valor.t, {valor.val.n}}};
@@ -114,39 +114,41 @@ Expr: NUMt {  tmp.t = NUM; tmp.val.n = $1; AddInstr(PUSH, tmp);}
 	| Expr NEt Expr  { tmp.t = NUM; tmp.val.n = 0; AddInstr(NE, tmp);}
 ;
 
-Cond: IF OPEN  Expr {
+/*Cond: IF OPEN  Expr {
                salva_end(ip);
-               tmp.t = NUM; tmp.val.n = ip;
-               AddInstr(JMP, tmp);
+               tmp.t = NUM; tmp.val.n = 0;
+               AddInstr(JIF, tmp);
          }
          CLOSE  Bloco {
            prog[pega_end()].op.val.n = ip;
+           tmp.t = NUM; tmp.val.n = ip;
+           salva_end(ip);
+           AddInstr(JMP, tmp);
          };
 
 Cond: Cond ELSE {
-           //prog[pega_end()].op.val.n = ip;
-           ip = prog[pega_end()].op.val.n;
-        }
+           prog[pega_end()].op.val.n = ip;
+        }*/
 
 
-/*Cond:   IF OPEN Expr {
+If:   IF OPEN Expr {
   	  	 	   salva_end(ip);
                tmp.t = NUM; tmp.val.n = 0;
                AddInstr(DUP, tmp);
 			   AddInstr(JIF, tmp);
  		 }
 		 CLOSE  Bloco {
-		   prog[pega_end()].op.val.n = ip;
-		 */
+		   prog[pega_end()+1].op.val.n = ip;
+        }
 
-/*Cond: If
+Cond: If
       | If {
          salva_end(ip-1);
          tmp.t = NUM; tmp.val.n = 0;
          AddInstr(JIT, tmp);
       } ELSE Bloco{
         prog[pega_end()+1].op.val.n = ip;
-      }*/
+      }
 
 Loop: WHILE OPEN  { salva_end(ip); }
 	  		Expr  { salva_end(ip); tmp.t = NUM; tmp.val.n = 0; AddInstr(JIF, tmp); }
@@ -229,7 +231,7 @@ ListParms:
 extern FILE *yyin;
 
 void yyerror(char const *msg) {
-  fprintf(stderr,"ERRO na linha %d: %s", yylineno(), msg);
+  fprintf(stderr,"ERRO na linha %d: %s", yylineno, msg); //TRATAMENTO DE ERRO: INDICA LINHA DO ERRO
 }
 
 int compilador(FILE *cod, INSTR *dest) {

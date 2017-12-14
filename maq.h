@@ -1,6 +1,6 @@
 #include "pilha.h"
 
-#define MAXMEM 30
+#define MAXMEM 100
 #define MAXFRM 30
 
 typedef struct {

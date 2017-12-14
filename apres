@@ -68,24 +68,28 @@ class cell:
         """
         # Posição do centro
         s.cx, s.cy = convert(i,j)
+
+        cores = [[255,204,153], [204,102,0], [160,160,160], [51,255,255], [102,51,0], [192,192,192]]
         # Cor (pode ser passada para o construtor no futuro)
         if (base == 0): #se for base do exercito 1, celula azul
             s.cor = (0,0,200)
         elif (base == 1): #se for base do exercito 2, celula vermelha
             s.cor = (200,0,0)
-        #se não for base, pinta de acordo com o tipo de terreno
-        elif (terreno == 0):
-            s.cor = (255,204,153)
-        elif (terreno == 1):
-            s.cor = (204,102,0)
-        elif (terreno == 2):
-            s.cor = (160,160,160)
-        elif (terreno == 3):
-            s.cor = (51,255,255)
-        elif (terreno == 4):
-            s.cor = (102,51,0)
         else:
-            s.cor = (192,192,192)
+            s.cor = cores[terreno]
+        #se não for base, pinta de acordo com o tipo de terreno
+        #elif (terreno == 0):
+        #    s.cor = (255,204,153)
+        #elif (terreno == 1):
+        #    s.cor = (204,102,0)
+        #elif (terreno == 2):
+        #    s.cor = (160,160,160)
+        #elif (terreno == 3):
+        #    s.cor = (51,255,255)
+        #elif (terreno == 4):
+        #    s.cor = (102,51,0)
+        #else:
+        #    s.cor = (192,192,192)
 
         s.contorno = (0,0,0)
 

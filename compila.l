@@ -46,7 +46,8 @@ print      { return PRINT; }
 }
 
 [ \t]+	/* pula espacos em branco */
-[ \n] yylineno++;
+
+\n yylineno++;
 
 #.*		/* comentarios simples */
 

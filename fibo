@@ -2,8 +2,10 @@ a = 5;
 b = 10;
 n = 20;
 
-if (n > a){
+if (n < a){
     print(a);
 }
-else{ print(b);}
+else { 
+  print(b);
+}
 

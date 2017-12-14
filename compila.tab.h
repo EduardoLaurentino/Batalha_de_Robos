@@ -71,12 +71,13 @@ extern int yydebug;
     FUNC = 281,
     PRINT = 282,
     PONTO = 283,
-    MOVt = 284,
-    POEt = 285,
-    EXTt = 286,
-    ATKt = 287,
-    NEG = 288,
-    PWR = 289
+    CEL = 284,
+    MOVt = 285,
+    POEt = 286,
+    EXTt = 287,
+    ATKt = 288,
+    NEG = 289,
+    PWR = 290
   };
 #endif
 
@@ -91,7 +92,7 @@ union YYSTYPE
   /* symrec *cod; */
   char cod[30];
 
-#line 95 "compila.tab.h" /* yacc.c:1909  */
+#line 96 "compila.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
