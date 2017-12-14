@@ -1,6 +1,14 @@
 while (celula.sudeste.terreno == 1) {
   move.sudeste;
 }
+
+if (celula.aqui.cristais > 0) {
+  extrai.aqui;
+}
+else {
+  move.noroeste;
+}
+
 while (celula.sudeste.terreno == 1) {
   move.leste;
 }
